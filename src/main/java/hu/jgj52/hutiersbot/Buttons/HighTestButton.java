@@ -1,0 +1,27 @@
+package hu.jgj52.hutiersbot.Buttons;
+
+import hu.jgj52.hutiersbot.Types.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+
+public class HighTestButton extends Button {
+    @Override
+    public String getCustomId() {
+        return "closehightest";
+    }
+
+    @Override
+    public String getLabel() {
+        return "Close";
+    }
+
+    @Override
+    public ButtonStyle getStyle() {
+        return ButtonStyle.DANGER;
+    }
+
+    @Override
+    public void execute(ButtonInteractionEvent event) {
+        event.getChannel().delete().queue();
+    }
+}

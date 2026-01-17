@@ -45,12 +45,15 @@ public class Main {
         builder.build();
 
         buttons.add(new StopNameUpdatingButton());
+        buttons.add(new HighTestButton());
+        buttons.add(new HighTestGiveButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
+        commands.add(new SpinCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
 
-        //modals.add();
+        modals.add(new HighTestGiveModal());
     }
 }
