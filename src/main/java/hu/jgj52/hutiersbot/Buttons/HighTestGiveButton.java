@@ -13,7 +13,7 @@ public class HighTestGiveButton extends Button {
 
     @Override
     public String getLabel() {
-        return "Give tier";
+        return "Tier adás";
     }
 
     @Override

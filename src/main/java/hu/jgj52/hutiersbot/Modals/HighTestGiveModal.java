@@ -1,20 +1,15 @@
 package hu.jgj52.hutiersbot.Modals;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Modal;
-import hu.jgj52.hutiersbot.Utils.PostgreSQL;
+import hu.jgj52.hutiersbot.Types.Player;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class HighTestGiveModal extends Modal {
     @Override
@@ -24,7 +19,7 @@ public class HighTestGiveModal extends Modal {
 
     @Override
     public String getTitle() {
-        return "Give tier";
+        return "Tier adás";
     }
 
     @Override
@@ -44,13 +39,20 @@ public class HighTestGiveModal extends Modal {
         String tier = event.getValue("hightestgivemodal_tier").getAsString();
         String[] dats = event.getChannel().getName().split("-");
         try {
-            PostgreSQL.QueryResult result = Main.postgres.from("players").eq("discord_id", dats[2]).execute().get();
-            JsonObject tiers = new Gson().fromJson(result.data.getFirst().get("data").toString(), JsonObject.class);
-            tiers.addProperty(dats[1], tier);
-            Map<String, Object> newData = new HashMap<>();
-            newData.put("tiers", tiers.toString());
-            Main.postgres.from("players").eq("discord_id", dats[2]).update(newData);
-            event.getChannel().delete().queue();
+            Player player = Player.of(dats[2]);
+            if (player == null) return;
+            Gamemode gamemode = Gamemode.of(Integer.parseInt(dats[1]));
+            player.setTier(gamemode, tier);
+            player.setLastTest(gamemode, System.currentTimeMillis());
+            event.getInteraction().reply("Tier beállítva!").setEphemeral(true).queue();
+            CompletableFuture.runAsync(() -> {
+                try {
+                    Thread.sleep(5000);
+                    event.getChannel().delete().queue();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

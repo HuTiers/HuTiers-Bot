@@ -6,6 +6,7 @@ import hu.jgj52.hutiersbot.Buttons.HighTestButton;
 import hu.jgj52.hutiersbot.Buttons.HighTestGiveButton;
 import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
+import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Types.SelectMenu;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,7 +34,7 @@ public class RequestTestSelectMenu extends SelectMenu {
             PostgreSQL.QueryResult result = Main.postgres.from("gamemodes").order("id").execute().get();
             Map<String, Map<Emoji, String>> data = new LinkedHashMap<>();
             for (Map<String, Object> row : result.data) {
-                Gamemode gamemode = new Gamemode(row);
+                Gamemode gamemode = Gamemode.of(Integer.parseInt(row.get("id").toString()));
                 Map<Emoji, String> emojiStringMap = new HashMap<>();
                 emojiStringMap.put(gamemode.getEmoji(), gamemode.getName());
                 data.put(String.valueOf(gamemode.getId()), emojiStringMap);
@@ -48,28 +49,18 @@ public class RequestTestSelectMenu extends SelectMenu {
     public void execute(StringSelectInteractionEvent event) {
         Gson gson = new Gson();
         try {
-            PostgreSQL.QueryResult result = Main.postgres.from("gamemodes").eq("id", Integer.parseInt(event.getValues().getFirst())).execute().get();
-            Gamemode gamemode = new Gamemode(result.data.getFirst());
-            PostgreSQL.QueryResult player = Main.postgres.from("players").eq("discord_id", event.getUser().getId()).execute().get();
-            if (result.isEmpty()) {
+            event.getMessage().editMessageComponents(ActionRow.of(selectmenu())).queue();
+            Gamemode gamemode = Gamemode.of(Integer.parseInt(event.getValues().getFirst()));
+            Player player = Player.of(event.getUser().getId());
+            if (player == null) {
                 event.reply("Nem vagy fent a tierlisten!").setEphemeral(true).queue();
                 return;
             }
-            Map<String, Object> data = player.data.getFirst();
-            JsonObject lastTest = gson.fromJson(data.get("last_test").toString(), JsonObject.class);
-            String lastTestValue = lastTest.has(String.valueOf(gamemode.getId()))
-                    ? lastTest.get(String.valueOf(gamemode.getId())).getAsString()
-                    : "";
-
-            long lastTestTime = 0;
-            if (!lastTestValue.isEmpty()) {
-                lastTestTime = Long.parseLong(lastTestValue);
-            }
-            if (lastTestTime + Main.testCooldown > System.currentTimeMillis()) {
-                event.reply("Az újratesztelési időkereted lejár <t:" + (lastTestTime + Main.testCooldown) / 1000 + ":R>").setEphemeral(true).queue();
+            if (player.getLastTest(gamemode) + Main.testCooldown > System.currentTimeMillis()) {
+                event.reply("Az újratesztelési időkereted lejár <t:" + (player.getLastTest(gamemode) + Main.testCooldown) / 1000 + ":R>").setEphemeral(true).queue();
                 return;
             }
-            String tier = gson.fromJson(data.get("tiers").toString(), JsonObject.class).get(String.valueOf(gamemode.getId())).getAsString();
+            String tier = player.getTier(gamemode);
             if (tier.endsWith("4") || tier.endsWith("5")) {
                 event.reply("Minimum LT3 kell legyél ebből a játékmódból!").setEphemeral(true).queue();
                 return;

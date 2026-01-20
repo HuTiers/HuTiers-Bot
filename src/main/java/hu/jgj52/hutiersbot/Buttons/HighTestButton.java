@@ -12,7 +12,7 @@ public class HighTestButton extends Button {
 
     @Override
     public String getLabel() {
-        return "Close";
+        return "Bezárás";
     }
 
     @Override
