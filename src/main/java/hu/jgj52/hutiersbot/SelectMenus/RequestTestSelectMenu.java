@@ -1,7 +1,5 @@
 package hu.jgj52.hutiersbot.SelectMenus;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import hu.jgj52.hutiersbot.Buttons.HighTestButton;
 import hu.jgj52.hutiersbot.Buttons.HighTestGiveButton;
 import hu.jgj52.hutiersbot.Main;
@@ -47,7 +45,6 @@ public class RequestTestSelectMenu extends SelectMenu {
 
     @Override
     public void execute(StringSelectInteractionEvent event) {
-        Gson gson = new Gson();
         try {
             event.getMessage().editMessageComponents(ActionRow.of(selectmenu())).queue();
             Gamemode gamemode = Gamemode.of(Integer.parseInt(event.getValues().getFirst()));

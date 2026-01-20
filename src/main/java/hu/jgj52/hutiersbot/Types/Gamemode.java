@@ -25,6 +25,18 @@ public class Gamemode {
         return gamemode;
     }
 
+    public static Gamemode of(String name) {
+        try {
+            PostgreSQL.QueryResult result = Main.postgres.from("gamemodes").eq("name", name).execute().get();
+            Map<String, Object> data = result.data.getFirst();
+            return of(Integer.parseInt(data.get("id").toString()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private final int id;
     private String name;
     private Category category;

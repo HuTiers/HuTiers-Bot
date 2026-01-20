@@ -47,12 +47,15 @@ public class Main {
         buttons.add(new StopNameUpdatingButton());
         buttons.add(new HighTestButton());
         buttons.add(new HighTestGiveButton());
+        buttons.add(new JoinQueueButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
         commands.add(new SpinCommand());
+        commands.add(new StartTestCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
+        selectmenus.add(new StartTestSelectMenu());
 
         modals.add(new HighTestGiveModal());
     }
