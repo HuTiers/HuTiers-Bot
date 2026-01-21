@@ -12,20 +12,20 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JoinQueueButton extends Button {
+public class LeaveQueueButton extends Button {
     @Override
     public String getCustomId() {
-        return "enterqueuebutton";
+        return "quitqueuebutton";
     }
 
     @Override
     public String getLabel() {
-        return "Belépés a queue-ba";
+        return "Kilépés a queue-ból";
     }
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.SUCCESS;
+        return ButtonStyle.DANGER;
     }
 
     @Override
@@ -34,11 +34,7 @@ public class JoinQueueButton extends Button {
         Gamemode gamemode = Gamemode.of(gm);
 
         List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.get(gamemode));
-        if (nowPlayers.size() >= 3) {
-            event.reply("Tele van a queue!").setEphemeral(true).queue();
-            return;
-        }
-        nowPlayers.add(Player.of(event.getUser().getId()));
+        nowPlayers.remove(Player.of(event.getUser().getId()));
         StartTestSelectMenu.queue.put(gamemode, nowPlayers);
 
         MessageEmbed oldEmbed = event.getMessage().getEmbeds().get(0);

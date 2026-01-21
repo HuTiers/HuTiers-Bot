@@ -48,6 +48,7 @@ public class Main {
         buttons.add(new HighTestButton());
         buttons.add(new HighTestGiveButton());
         buttons.add(new JoinQueueButton());
+        buttons.add(new LeaveQueueButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
