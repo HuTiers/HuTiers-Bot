@@ -30,6 +30,7 @@ public class StartTestCommand extends Command {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Teszt várólista indítása");
         embed.setDescription("Válaszd ki a játékmódot, amből tesztelni szeretnél embereket.");
+        embed.setFooter("Hogy befejezd a tesztelést, válaszd ki újra a játékmódot.");
 
         SelectMenu selectmenu = new StartTestSelectMenu();
 

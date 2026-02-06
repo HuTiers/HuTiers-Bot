@@ -30,28 +30,32 @@ public class JoinQueueButton extends Button {
 
     @Override
     public void execute(ButtonInteractionEvent event) {
-        String gm = event.getMessage().getEmbeds().get(0).getTitle().split(" ")[1];
-        Gamemode gamemode = Gamemode.of(gm);
+        if (StartTestSelectMenu.canEnter) {
+            String gm = event.getMessage().getEmbeds().get(0).getTitle().split(" ")[1];
+            Gamemode gamemode = Gamemode.of(gm);
 
-        List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.get(gamemode));
-        if (nowPlayers.size() >= 3) {
-            event.reply("Tele van a queue!").setEphemeral(true).queue();
-            return;
+            List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.get(gamemode));
+            if (nowPlayers.size() >= 3) {
+                event.reply("Tele van a queue!").setEphemeral(true).queue();
+                return;
+            }
+            nowPlayers.add(Player.of(event.getUser().getId()));
+            StartTestSelectMenu.queue.put(gamemode, nowPlayers);
+
+            MessageEmbed oldEmbed = event.getMessage().getEmbeds().get(0);
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setTitle(oldEmbed.getTitle());
+            embed.setDescription(oldEmbed.getDescription());
+            String value = "";
+            for (Player player : nowPlayers) {
+                value = value + "<@" + player.getDiscordId() + "> (" + player.getName() + ")\n";
+            }
+            embed.addField(oldEmbed.getFields().get(0).getName(), value, false);
+            embed.addField(oldEmbed.getFields().get(1));
+
+            event.editMessageEmbeds(embed.build()).queue();
+        } else {
+            event.reply("Nem megy a queue!").setEphemeral(true).queue();
         }
-        nowPlayers.add(Player.of(event.getUser().getId()));
-        StartTestSelectMenu.queue.put(gamemode, nowPlayers);
-
-        MessageEmbed oldEmbed = event.getMessage().getEmbeds().get(0);
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(oldEmbed.getTitle());
-        embed.setDescription(oldEmbed.getDescription());
-        String value = "";
-        for (Player player : nowPlayers) {
-            value = value + "<@" + player.getDiscordId() + "> (" + player.getName() + ")\n";
-        }
-        embed.addField(oldEmbed.getFields().get(0).getName(), value, false);
-        embed.addField(oldEmbed.getFields().get(1));
-
-        event.editMessageEmbeds(embed.build()).queue();
     }
 }

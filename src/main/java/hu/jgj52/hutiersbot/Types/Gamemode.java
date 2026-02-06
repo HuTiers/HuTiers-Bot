@@ -2,8 +2,11 @@ package hu.jgj52.hutiersbot.Types;
 
 import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ public class Gamemode {
     private Category category;
     private Emoji emoji;
     private Role role;
+    private GuildMessageChannel channel;
 
     private Gamemode(int id) {
         this.id = id;
@@ -52,6 +56,7 @@ public class Gamemode {
             category = Main.guild.getCategoryById(data.get("category_id").toString());
             emoji = Emoji.fromFormatted(data.get("emoji").toString());
             role = Main.guild.getRoleById(data.get("role_id").toString());
+            channel = Main.guild.getChannelById(GuildMessageChannel.class, data.get("channel_id").toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,5 +80,9 @@ public class Gamemode {
 
     public Role getRole() {
         return role;
+    }
+
+    public GuildMessageChannel getChannel() {
+        return channel;
     }
 }
