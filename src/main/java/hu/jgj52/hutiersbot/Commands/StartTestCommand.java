@@ -1,6 +1,8 @@
 package hu.jgj52.hutiersbot.Commands;
 
+import hu.jgj52.hutiersbot.Buttons.NextButton;
 import hu.jgj52.hutiersbot.SelectMenus.StartTestSelectMenu;
+import hu.jgj52.hutiersbot.Types.Button;
 import hu.jgj52.hutiersbot.Types.Command;
 import hu.jgj52.hutiersbot.Types.SelectMenu;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,8 +35,9 @@ public class StartTestCommand extends Command {
         embed.setFooter("Hogy befejezd a tesztelést, válaszd ki újra a játékmódot.");
 
         SelectMenu selectmenu = new StartTestSelectMenu();
+        Button button = new NextButton();
 
-        event.getChannel().sendMessage("").addEmbeds(embed.build()).setComponents(ActionRow.of(selectmenu.selectmenu())).queue();
+        event.getChannel().sendMessage("").addEmbeds(embed.build()).setComponents(ActionRow.of(selectmenu.selectmenu()), ActionRow.of(button.button())).queue();
 
         event.reply("sent").setEphemeral(true).queue();
     }

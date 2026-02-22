@@ -2,6 +2,7 @@ package hu.jgj52.hutiersbot.SelectMenus;
 
 import hu.jgj52.hutiersbot.Buttons.JoinQueueButton;
 import hu.jgj52.hutiersbot.Buttons.LeaveQueueButton;
+import hu.jgj52.hutiersbot.Buttons.NextButton;
 import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
@@ -52,7 +53,7 @@ public class StartTestSelectMenu extends SelectMenu {
     public void execute(StringSelectInteractionEvent event) {
         try {
             event.deferReply(true).queue();
-            event.getMessage().editMessageComponents(ActionRow.of(selectmenu())).queue();
+            event.getMessage().editMessageComponents(ActionRow.of(selectmenu()), ActionRow.of(new NextButton().button())).queue();
             Gamemode gamemode = Gamemode.of(Integer.parseInt(event.getValues().getFirst()));
             Player player = Player.of(event.getUser().getId());
             if (player == null) return;
@@ -84,6 +85,14 @@ public class StartTestSelectMenu extends SelectMenu {
                 channel.editMessageById(channel.getLatestMessageId(), MessageEditData.fromEmbeds(embed.build())).queue();
                 event.getHook().editOriginal("Sikeresen kiléptél a tesztelésből.").queue();
                 return;
+            }
+            for (List<Player> pl : testers.values()) {
+                for (Player p : pl) {
+                    if (p == player) {
+                        event.getHook().editOriginal("Már tesztelsz egy gamemodeból!").queue();
+                        return;
+                    }
+                }
             }
             if (testers.get(gamemode) != null) {
                 List<Player> ts = new ArrayList<>(testers.get(gamemode));

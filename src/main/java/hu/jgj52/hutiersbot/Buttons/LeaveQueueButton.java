@@ -33,7 +33,7 @@ public class LeaveQueueButton extends Button {
         String gm = event.getMessage().getEmbeds().get(0).getTitle().split(" ")[1];
         Gamemode gamemode = Gamemode.of(gm);
 
-        List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.get(gamemode));
+        List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.getOrDefault(gamemode, List.of()));
         nowPlayers.remove(Player.of(event.getUser().getId()));
         StartTestSelectMenu.queue.put(gamemode, nowPlayers);
 
