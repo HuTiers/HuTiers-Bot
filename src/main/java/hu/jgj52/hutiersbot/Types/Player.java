@@ -41,7 +41,7 @@ public class Player {
 
     private final int id;
     private String name;
-    private String uuid; // yeah its in string in db too ignore that
+    private String uuid; // yeah it's in string in db too ignore that
     private String discordId; // same
     private JsonObject tiers;
     private JsonObject lastTest;
@@ -69,30 +69,37 @@ public class Player {
     }
 
     public String getName() {
+        update();
         return name;
     }
 
     public String getUUID() {
+        update();
         return uuid;
     }
 
     public String getDiscordId() {
+        update();
         return discordId;
     }
 
     public JsonObject getTiers() {
+        update();
         return tiers;
     }
 
     public JsonObject getLastTest() {
+        update();
         return lastTest;
     }
 
     public JsonObject getRetired() {
+        update();
         return retired;
     }
 
     public String getTier(Gamemode gamemode) {
+        update();
         for (String id : tiers.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 return tiers.get(id).getAsString();
@@ -103,6 +110,7 @@ public class Player {
     }
 
     public Long getLastTest(Gamemode gamemode) {
+        update();
         for (String id : lastTest.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 return lastTest.get(id).getAsLong();
@@ -113,6 +121,7 @@ public class Player {
     }
 
     public Boolean getRetired(Gamemode gamemode) {
+        update();
         for (String id : retired.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 return retired.get(id).getAsBoolean();
@@ -123,6 +132,7 @@ public class Player {
     }
 
     private void set(Map<String, Object> data) {
+        update();
         Main.postgres.from("players").eq("id", getId()).update(data);
     }
 
@@ -178,6 +188,7 @@ public class Player {
     }
 
     public void setTier(Gamemode gamemode, String tier) {
+        update();
         for (String id : tiers.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 JsonObject tiers = this.tiers;
@@ -189,6 +200,7 @@ public class Player {
     }
 
     public void setLastTest(Gamemode gamemode, Long lastTest) {
+        update();
         for (String id : this.lastTest.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 JsonObject lt = this.lastTest;
@@ -200,6 +212,7 @@ public class Player {
     }
 
     public void setRetired(Gamemode gamemode, Boolean retired) {
+        update();
         for (String id : this.retired.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
                 JsonObject r = this.retired;
@@ -207,6 +220,22 @@ public class Player {
                 setLastTest(r);
                 break;
             }
+        }
+    }
+
+    private void update() {
+        try {
+            PostgreSQL.QueryResult result = Main.postgres.from("players").eq("id", id).single().get();
+            Map<String, Object> data = result.data.getFirst();
+            name = data.get("name").toString();
+            uuid = data.get("uuid").toString();
+            discordId = data.get("discord_id").toString();
+            Gson gson = new Gson();
+            tiers = gson.fromJson(data.get("tiers").toString(), JsonObject.class);
+            lastTest = gson.fromJson(data.get("last_test").toString(), JsonObject.class);
+            retired = gson.fromJson(data.get("retired").toString(), JsonObject.class);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

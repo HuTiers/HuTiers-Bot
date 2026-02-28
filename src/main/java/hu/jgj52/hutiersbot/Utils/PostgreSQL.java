@@ -38,13 +38,6 @@ public class PostgreSQL {
 
 
     public QueryBuilder from(String table) {
-        //table thingie so dont have to shutdown other bot
-        Map<String, String> tableMap = Map.of(
-                "players", "players-new",
-                "gamemodes", "gamemodes-new"
-        );
-
-        table = tableMap.getOrDefault(table, table);
         return new QueryBuilder(this.dataSource, table);
     }
 

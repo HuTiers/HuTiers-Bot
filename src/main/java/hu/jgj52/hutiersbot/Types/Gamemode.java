@@ -85,4 +85,6 @@ public class Gamemode {
     public GuildMessageChannel getChannel() {
         return channel;
     }
+
+    // don't really need the update thing here like in player bc these not change often
 }

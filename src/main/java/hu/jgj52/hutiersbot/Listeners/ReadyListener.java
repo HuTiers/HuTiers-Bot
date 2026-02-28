@@ -16,7 +16,9 @@ public class ReadyListener extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         JDA jda = event.getJDA();
 
-        Main.guild = jda.getGuildById("1379556807638253629");
+        Main.guild = jda.getGuildById(Main.dotenv.get("GUILD_ID"));
+        Main.resultChannel = jda.getTextChannelById(Main.dotenv.get("RESULT_CHANNEL_ID"));
+        Main.testerRole = jda.getRoleById(Main.dotenv.get("TESTER_ROLE_ID"));
 
         CommandListUpdateAction jdaCommands = jda.updateCommands();
         List<SlashCommandData> cmds = new ArrayList<>();

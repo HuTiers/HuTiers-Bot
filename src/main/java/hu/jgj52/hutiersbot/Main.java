@@ -10,6 +10,8 @@ import hu.jgj52.hutiersbot.Utils.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.ArrayList;
@@ -24,9 +26,12 @@ public class Main {
     public static PostgreSQL postgres;
     public static Guild guild;
     public static Long testCooldown;
+    public static TextChannel resultChannel;
+    public static Role testerRole;
+    public static Dotenv dotenv;
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.load();
+        dotenv = Dotenv.load();
 
         testCooldown = Long.parseLong(dotenv.get("TEST_COOLDOWN")) * 1000;
 
@@ -50,6 +55,7 @@ public class Main {
         buttons.add(new JoinQueueButton());
         buttons.add(new LeaveQueueButton());
         buttons.add(new NextButton());
+        buttons.add(new GiveTierButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
@@ -60,5 +66,6 @@ public class Main {
         selectmenus.add(new StartTestSelectMenu());
 
         modals.add(new HighTestGiveModal());
+        modals.add(new GiveModal());
     }
 }

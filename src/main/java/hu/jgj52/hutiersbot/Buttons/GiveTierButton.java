@@ -1,30 +1,28 @@
 package hu.jgj52.hutiersbot.Buttons;
 
-import hu.jgj52.hutiersbot.Main;
+import hu.jgj52.hutiersbot.Modals.GiveModal;
 import hu.jgj52.hutiersbot.Types.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
-public class HighTestButton extends Button {
+public class GiveTierButton extends Button {
     @Override
     public String getCustomId() {
-        return "closehightest";
+        return "givetierbutton";
     }
 
     @Override
     public String getLabel() {
-        return "Bezárás";
+        return "Tier adás";
     }
 
     @Override
     public ButtonStyle getStyle() {
-        return ButtonStyle.DANGER;
+        return ButtonStyle.SUCCESS;
     }
 
     @Override
     public void execute(ButtonInteractionEvent event) {
-        if (event.getMember().getRoles().contains(Main.testerRole)) {
-            event.getChannel().delete().queue();
-        }
+        event.replyModal(new GiveModal().modal()).queue();
     }
 }
