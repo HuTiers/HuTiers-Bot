@@ -112,6 +112,7 @@ public class Main {
 
                         Map<String, Object> entry = new HashMap<>();
                         entry.put("id", player.getId());
+                        entry.put("uuid", player.getUUID());
                         entry.put("points", points);
 
                         if (lastPlayer != null && points == pointsMap.get(lastPlayer)) {
