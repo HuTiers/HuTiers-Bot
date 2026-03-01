@@ -1,5 +1,6 @@
 package hu.jgj52.hutiersbot.api;
 
+import com.google.gson.Gson;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
@@ -15,6 +16,7 @@ public class Main {
     public static void main(String[] args) {
         PostgreSQL postgres = hu.jgj52.hutiersbot.Main.postgres;
         Javalin.create(config -> {
+            Gson gson = new Gson();
             RoutesConfig route = config.routes;
             route.get("/v2/player/{player}", context -> {
                 String playerName = context.pathParam("player");
@@ -28,7 +30,7 @@ public class Main {
                     Map<String, Object> row = data.get(0);
                     Player player = Player.of(row);
 
-                    context.status(200).json(new Object[]{player.getTiers().toString(), player.getRetired().toString()});
+                    context.status(200).json(new Object[]{gson.toJson(player.getTiers()), gson.toJson(player.getRetired())});
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -46,7 +48,7 @@ public class Main {
                     Map<String, Object> row = data.get(0);
                     Player player = Player.of(row);
 
-                    context.status(200).json(new Object[]{player.getTiers().toString(), player.getRetired().toString()});
+                    context.status(200).json(new Object[]{gson.toJson(player.getTiers()), gson.toJson(player.getRetired().toString())});
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -113,7 +115,10 @@ public class Main {
                         Map<String, Object> entry = new HashMap<>();
                         entry.put("id", player.getId());
                         entry.put("uuid", player.getUUID());
+                        entry.put("name", player.getName());
                         entry.put("points", points);
+                        entry.put("tiers", gson.toJson(player.getTiers()));
+                        entry.put("retired", gson.toJson(player.getLastTest()));
 
                         if (lastPlayer != null && points == pointsMap.get(lastPlayer)) {
                             entry.put("place", result.get(result.size() - 1).get("place"));
