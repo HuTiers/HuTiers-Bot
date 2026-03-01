@@ -17,6 +17,7 @@ public class Main {
         PostgreSQL postgres = hu.jgj52.hutiersbot.Main.postgres;
         Javalin.create(config -> {
             Gson gson = new Gson();
+            config.bundledPlugins.enableCors(cors -> cors.addRule(rule -> rule.allowHost("https://hutiers.hu")));
             RoutesConfig route = config.routes;
             route.get("/v2/player/{player}", context -> {
                 String playerName = context.pathParam("player");
