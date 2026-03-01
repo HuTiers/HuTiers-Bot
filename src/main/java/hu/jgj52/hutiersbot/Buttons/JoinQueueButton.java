@@ -51,12 +51,27 @@ public class JoinQueueButton extends Button {
                 }
             }
 
+            int weight = switch (player.getTier(gamemode)) {
+                case "LT3" -> 1;
+                case "HT3" -> 2;
+                case "LT2" -> 3;
+                case "HT2" -> 4;
+                case "LT1" -> 5;
+                case "HT1" -> 6;
+                default -> 0;
+            };
+
+            if (weight > 0) {
+                event.reply("Magas szinten vagy már!\nNyiss magas ticketet hogy mehess feljebb").setEphemeral(true).queue();
+                return;
+            }
+
             List<Player> nowPlayers = new ArrayList<>(StartTestSelectMenu.queue.get(gamemode));
             if (nowPlayers.contains(player)) {
                 event.reply("Már bent vagy a queueban!").setEphemeral(true).queue();
                 return;
             }
-            if (nowPlayers.size() >= 3) {
+            if (nowPlayers.size() >= 10) {
                 event.reply("Tele van a queue!").setEphemeral(true).queue();
                 return;
             }

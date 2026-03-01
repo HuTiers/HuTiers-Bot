@@ -10,9 +10,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -74,20 +73,19 @@ public class NextButton extends Button {
                     nowPlayers.remove(next);
                     StartTestSelectMenu.queue.put(gm, nowPlayers);
 
-                    channel2.retrieveMessageById(channel2.getLatestMessageId()).queue(message -> {
-                        MessageEmbed oldEmbed = message.getEmbeds().get(0);
-                        EmbedBuilder embed2 = new EmbedBuilder();
-                        embed2.setTitle(oldEmbed.getTitle());
-                        embed2.setDescription(oldEmbed.getDescription());
-                        String value = "";
-                        for (Player player2 : nowPlayers) {
-                            value = value + "<@" + player2.getDiscordId() + "> (" + player2.getName() + ")\n";
-                        }
-                        embed2.addField(oldEmbed.getFields().get(0).getName(), value, false);
-                        embed2.addField(oldEmbed.getFields().get(1));
+                    Message message = StartTestSelectMenu.messages.get(gm);
+                    MessageEmbed oldEmbed = message.getEmbeds().get(0);
+                    EmbedBuilder embed2 = new EmbedBuilder();
+                    embed2.setTitle(oldEmbed.getTitle());
+                    embed2.setDescription(oldEmbed.getDescription());
+                    String value = "";
+                    for (Player player2 : nowPlayers) {
+                        value = value + "<@" + player2.getDiscordId() + "> (" + player2.getName() + ")\n";
+                    }
+                    embed2.addField(oldEmbed.getFields().get(0).getName(), value, false);
+                    embed2.addField(oldEmbed.getFields().get(1));
 
-                        channel2.editMessageById(message.getId(), MessageEditData.fromEmbeds(embed2.build())).queue();
-                    });
+                    channel2.editMessageById(message.getId(), MessageEditData.fromEmbeds(embed2.build())).queue();
                 });
                 return;
             }

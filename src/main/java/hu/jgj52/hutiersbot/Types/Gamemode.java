@@ -46,6 +46,7 @@ public class Gamemode {
     private Emoji emoji;
     private Role role;
     private GuildMessageChannel channel;
+    private Role queueRole;
 
     private Gamemode(int id) {
         this.id = id;
@@ -57,6 +58,7 @@ public class Gamemode {
             emoji = Emoji.fromFormatted(data.get("emoji").toString());
             role = Main.guild.getRoleById(data.get("role_id").toString());
             channel = Main.guild.getChannelById(GuildMessageChannel.class, data.get("channel_id").toString());
+            queueRole = Main.guild.getRoleById(data.get("queue_role_id").toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,6 +86,10 @@ public class Gamemode {
 
     public GuildMessageChannel getChannel() {
         return channel;
+    }
+
+    public Role getQueueRole() {
+        return queueRole;
     }
 
     // don't really need the update thing here like in player bc these not change often

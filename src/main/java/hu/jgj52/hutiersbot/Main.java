@@ -47,6 +47,7 @@ public class Main {
         builder.addEventListeners(new SelectMenuListener());
         builder.addEventListeners(new ModalListener());
         builder.addEventListeners(new ReadyListener());
+        builder.addEventListeners(new MemberJoinListener());
         builder.build();
 
         buttons.add(new StopNameUpdatingButton());
@@ -62,11 +63,18 @@ public class Main {
         commands.add(new SpinCommand());
         commands.add(new StartTestCommand());
         commands.add(new ConnectCommand());
+        commands.add(new QueuePingCommand());
+        commands.add(new ChangeDiscordCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
         selectmenus.add(new StartTestSelectMenu());
+        selectmenus.add(new QueueSelectMenu());
+        selectmenus.add(new SpinGamemodesSelectMenu());
+        selectmenus.add(new SpinTiersSelectMenu());
 
         modals.add(new HighTestGiveModal());
         modals.add(new GiveModal());
+
+        hu.jgj52.hutiersbot.api.Main.main(args);
     }
 }

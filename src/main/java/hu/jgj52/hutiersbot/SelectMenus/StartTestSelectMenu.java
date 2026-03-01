@@ -10,16 +10,17 @@ import hu.jgj52.hutiersbot.Types.SelectMenu;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.*;
 
 public class StartTestSelectMenu extends SelectMenu {
     public static final Map<Gamemode, List<Player>> queue = new HashMap<>();
     public static final Map<Gamemode, List<Player>> testers = new HashMap<>();
+    public static final Map<Gamemode, Message> messages = new HashMap<>();
     public static final Map<Gamemode, Boolean> canEnter = new HashMap<>();
 
     @Override
@@ -68,6 +69,8 @@ public class StartTestSelectMenu extends SelectMenu {
                 if (testers.get(gamemode).isEmpty()) {
                     canEnter.put(gamemode, false);
                     queue.get(gamemode).clear();
+                    messages.get(gamemode).delete().complete();
+                    messages.remove(gamemode);
                 }
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.setTitle(gamemode.getEmoji().getFormatted() + " " + gamemode.getName());
@@ -82,7 +85,6 @@ public class StartTestSelectMenu extends SelectMenu {
                     teszterek = teszterek + "<@" + p.getDiscordId() + "> (" + p.getName() + ")\n";
                 }
                 embed.addField("Teszterek", teszterek, false);
-                channel.editMessageById(channel.getLatestMessageId(), MessageEditData.fromEmbeds(embed.build())).complete();
                 event.getHook().editOriginal("Sikeresen kiléptél a tesztelésből.").queue();
                 return;
             }
@@ -113,26 +115,7 @@ public class StartTestSelectMenu extends SelectMenu {
                 teszterek = teszterek + "<@" + p.getDiscordId() + "> (" + p.getName() + ")\n";
             }
             embed.addField("Teszterek", teszterek, false);
-            channel.retrieveMessageById(channel.getLatestMessageId()).queue(
-                    message -> channel.editMessageById(
-                            message.getId(),
-                            MessageEditData.fromEmbeds(embed.build())
-                    ).setComponents(
-                            ActionRow.of(
-                                    new JoinQueueButton().button(),
-                                    new LeaveQueueButton().button()
-                            )
-                    ).queue(),
-                    failure -> channel.sendMessageEmbeds(embed.build())
-                            .setComponents(
-                                    ActionRow.of(
-                                            new JoinQueueButton().button(),
-                                            new LeaveQueueButton().button()
-                                    )
-                            )
-                            .queue()
-            );
-            channel.sendMessage("@here").queue(message -> message.delete().queue());
+            channel.sendMessage(gamemode.getQueueRole().getAsMention()).addEmbeds(embed.build()).addComponents(ActionRow.of(new JoinQueueButton().button(), new LeaveQueueButton().button())).queue(message -> messages.put(gamemode, message));
             event.getHook().editOriginal("Teszt elindítva!").queue();
         } catch (Exception e) {
             throw new RuntimeException(e);

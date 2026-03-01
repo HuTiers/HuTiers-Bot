@@ -10,15 +10,15 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectCommand extends Command {
+public class ChangeDiscordCommand extends Command {
     @Override
     public String getName() {
-        return "connect";
+        return "changediscord";
     }
 
     @Override
     public String getDescription() {
-        return "Csatlakoztasd Discord fiókodat a Minecraft fiókoddal";
+        return "Változtasd meg a Minecraft fiókodhozz kötött Discord fiókot erre.";
     }
 
     @Override
@@ -41,9 +41,9 @@ public class ConnectCommand extends Command {
             Map<String, Object> data = new HashMap<>();
             data.put("code", code);
             data.put("discord_id", event.getUser().getId());
-            data.put("usecase", 0);
+            data.put("usecase", 1);
             Main.postgres.from("codes").insert(data).get();
-            event.reply("A kódod: ``" + code + "``\nLépj fel a hutiers.hu Minecraft szerverre és írd be hogy ``/connect " + code + "``, hogy felkerülj a HuTiersre!").setEphemeral(true).queue();
+            event.reply("A kódod: ``" + code + "``\nLépj fel a hutiers.hu Minecraft szerverre és írd be hogy ``/changediscord " + code + "``, hogy a Minecraft fiókod erre a Discord fiókodra átkerüljön!").setEphemeral(true).queue();
         } catch (Exception e) {
             e.printStackTrace();
             event.reply("Hiba történt.").setEphemeral(true).queue();
