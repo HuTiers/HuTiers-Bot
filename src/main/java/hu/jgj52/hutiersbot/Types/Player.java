@@ -113,7 +113,7 @@ public class Player {
         update();
         for (String id : lastTest.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
-                return lastTest.get(id).getAsLong();
+                return lastTest.get(id) == null ? 0 : lastTest.get(id).getAsLong();
             }
         }
 
@@ -124,7 +124,7 @@ public class Player {
         update();
         for (String id : retired.keySet()) {
             if (Integer.parseInt(id) == gamemode.getId()) {
-                return retired.get(id).getAsBoolean();
+                return retired.get(id) != null && retired.get(id).getAsBoolean();
             }
         }
 

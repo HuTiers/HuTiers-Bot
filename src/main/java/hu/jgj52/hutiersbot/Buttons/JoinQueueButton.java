@@ -32,14 +32,14 @@ public class JoinQueueButton extends Button {
 
     @Override
     public void execute(ButtonInteractionEvent event) {
-        if (StartTestSelectMenu.canEnter) {
-            String gm = event.getMessage().getEmbeds().get(0).getTitle().split(" ")[1];
+        String gm = event.getMessage().getEmbeds().get(0).getTitle().split(" ")[1];
+        Gamemode gamemode = Gamemode.of(gm);
+        if (StartTestSelectMenu.canEnter.getOrDefault(gamemode, false)) {
             Player player = Player.of(event.getUser().getId());
             if (player == null) {
                 event.reply("Nem vagy fent a tierlisten!").setEphemeral(true).queue();
                 return;
             }
-            Gamemode gamemode = Gamemode.of(gm);
             if (player.getLastTest(gamemode) + Main.testCooldown > System.currentTimeMillis()) {
                 event.reply("Az újratesztelési időkereted lejár <t:" + (player.getLastTest(gamemode) + Main.testCooldown) / 1000 + ":R>").setEphemeral(true).queue();
                 return;

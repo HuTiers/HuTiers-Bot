@@ -61,6 +61,7 @@ public class Main {
         commands.add(new RequestTestCommand());
         commands.add(new SpinCommand());
         commands.add(new StartTestCommand());
+        commands.add(new ConnectCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
         selectmenus.add(new StartTestSelectMenu());

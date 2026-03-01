@@ -20,7 +20,7 @@ import java.util.*;
 public class StartTestSelectMenu extends SelectMenu {
     public static final Map<Gamemode, List<Player>> queue = new HashMap<>();
     public static final Map<Gamemode, List<Player>> testers = new HashMap<>();
-    public static boolean canEnter = false;
+    public static final Map<Gamemode, Boolean> canEnter = new HashMap<>();
 
     @Override
     public String getCustomId() {
@@ -66,7 +66,7 @@ public class StartTestSelectMenu extends SelectMenu {
             if (testers.get(gamemode) != null && testers.get(gamemode).contains(player)) {
                 testers.get(gamemode).remove(player);
                 if (testers.get(gamemode).isEmpty()) {
-                    canEnter = false;
+                    canEnter.put(gamemode, false);
                     queue.get(gamemode).clear();
                 }
                 EmbedBuilder embed = new EmbedBuilder();
@@ -82,7 +82,7 @@ public class StartTestSelectMenu extends SelectMenu {
                     teszterek = teszterek + "<@" + p.getDiscordId() + "> (" + p.getName() + ")\n";
                 }
                 embed.addField("Teszterek", teszterek, false);
-                channel.editMessageById(channel.getLatestMessageId(), MessageEditData.fromEmbeds(embed.build())).queue();
+                channel.editMessageById(channel.getLatestMessageId(), MessageEditData.fromEmbeds(embed.build())).complete();
                 event.getHook().editOriginal("Sikeresen kiléptél a tesztelésből.").queue();
                 return;
             }
@@ -102,7 +102,7 @@ public class StartTestSelectMenu extends SelectMenu {
                 queue.put(gamemode, new ArrayList<>());
                 testers.put(gamemode, new ArrayList<>(List.of(player)));
             }
-            canEnter = true;
+            canEnter.put(gamemode, true);
             EmbedBuilder embed = new EmbedBuilder();
             embed.setTitle(gamemode.getEmoji().getFormatted() + " " + gamemode.getName());
             embed.setDescription("Csatlakozz a queue-hoz, hogy leteszteljenek.");
@@ -132,6 +132,7 @@ public class StartTestSelectMenu extends SelectMenu {
                             )
                             .queue()
             );
+            channel.sendMessage("@here").queue(message -> message.delete().queue());
             event.getHook().editOriginal("Teszt elindítva!").queue();
         } catch (Exception e) {
             throw new RuntimeException(e);
