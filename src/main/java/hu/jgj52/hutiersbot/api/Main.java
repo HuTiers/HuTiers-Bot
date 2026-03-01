@@ -6,6 +6,7 @@ import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import io.javalin.Javalin;
 import io.javalin.config.RoutesConfig;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class Main {
         PostgreSQL postgres = hu.jgj52.hutiersbot.Main.postgres;
         Javalin.create(config -> {
             Gson gson = new Gson();
-            config.bundledPlugins.enableCors(cors -> cors.addRule(rule -> rule.allowHost("https://hutiers.hu")));
+            config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             RoutesConfig route = config.routes;
             route.get("/v2/player/{player}", context -> {
                 String playerName = context.pathParam("player");
@@ -76,7 +77,9 @@ public class Main {
                     List<Map<String, Object>> playerData = postgres.from("players").execute().get().data;
                     List<Player> players = new ArrayList<>();
                     for (Map<String, Object> row : playerData) {
-                        players.add(Player.of(row));
+                        Player p = Player.of(row);
+                        if (p == null) continue;
+                        players.add(p);
                     }
 
                     List<Map<String, Object>> gmData = postgres.from("gamemodes").execute().get().data;
