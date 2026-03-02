@@ -86,9 +86,18 @@ public class Main {
 
             route.get("/v4/player/{player}", context -> {
                 String uuid = context.pathParam("player");
+                boolean name = false;
+                if (context.queryParam("byName") != null && Boolean.parseBoolean(context.queryParam("byName"))) {
+                    name = true;
+                }
 
                 try {
-                    List<Map<String, Object>> data = postgres.from("players").eq("uuid", uuid).execute().get().data;
+                    List<Map<String, Object>> data;
+                    if (!name) {
+                        data = postgres.from("players").eq("uuid", uuid).execute().get().data;
+                    } else {
+                        data = postgres.from("players").eq("name", uuid).execute().get().data;
+                    }
                     if (data.isEmpty()) {
                         context.status(404).result("Player not found");
                         return;
