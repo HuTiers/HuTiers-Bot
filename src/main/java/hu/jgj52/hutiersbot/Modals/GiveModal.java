@@ -43,7 +43,7 @@ public class GiveModal extends Modal {
     @Override
     public void execute(ModalInteractionEvent event) {
         //this is definitely not null safe but it is
-        String tier = event.getValue("givetiermodal_tier").getAsString();
+        String tier = event.getValue("givetiermodal_tier").getAsString().toUpperCase();
         Message message = event.getMessage();
         MessageEmbed.Footer footer = message.getEmbeds().getFirst().getFooter();
         if (footer == null) {
@@ -66,10 +66,10 @@ public class GiveModal extends Modal {
         player.setLastTest(gamemode, System.currentTimeMillis());
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Teszt eredmény");
-        embed.setDescription("<@" + tester.getDiscordId() + "> **" + tier.toUpperCase() + "** tiert adott <@" + player.getDiscordId() + "> (" + player.getName() + ") játékosnak " + gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "** játékmódból.");
+        embed.setDescription("<@" + tester.getDiscordId() + "> **" + tier + "** tiert adott <@" + player.getDiscordId() + "> (" + player.getName() + ") játékosnak " + gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "** játékmódból.");
         try {
             for (Map<String, Object> gms : Main.postgres.from("gamemodes").order("id").execute().get().data) {
-                Gamemode gm = Gamemode.of(Integer.parseInt(gms.get("id").toString()));
+                Gamemode gm = Gamemode.of(gms);
                 embed.addField(
                         gm.getEmoji().getFormatted() + " **" + gm.getName() + "**",
                         player.getTier(gm),

@@ -36,7 +36,7 @@ public class HighTestGiveModal extends Modal {
 
     @Override
     public void execute(ModalInteractionEvent event) {
-        String tier = event.getValue("hightestgivemodal_tier").getAsString();
+        String tier = event.getValue("hightestgivemodal_tier").getAsString().toUpperCase();
         String[] dats = event.getChannel().getName().split("-");
         try {
             Player player = Player.of(dats[2]);

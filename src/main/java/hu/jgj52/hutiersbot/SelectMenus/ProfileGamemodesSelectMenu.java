@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SpinGamemodesSelectMenu extends SelectMenu {
+public class ProfileGamemodesSelectMenu extends SelectMenu {
     public static final Map<String, Gamemode> gamemodes = new HashMap<>();
     @Override
     public String getCustomId() {
-        return "spingamemode";
+        return "profilegamemode";
     }
 
     @Override

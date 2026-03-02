@@ -1,6 +1,6 @@
 package hu.jgj52.hutiersbot.SelectMenus;
 
-import hu.jgj52.hutiersbot.Buttons.HighTestButton;
+import hu.jgj52.hutiersbot.Buttons.CloseButton;
 import hu.jgj52.hutiersbot.Buttons.HighTestGiveButton;
 import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
@@ -32,7 +32,7 @@ public class RequestTestSelectMenu extends SelectMenu {
             PostgreSQL.QueryResult result = Main.postgres.from("gamemodes").order("id").execute().get();
             Map<String, Map<Emoji, String>> data = new LinkedHashMap<>();
             for (Map<String, Object> row : result.data) {
-                Gamemode gamemode = Gamemode.of(Integer.parseInt(row.get("id").toString()));
+                Gamemode gamemode = Gamemode.of(row);
                 Map<Emoji, String> emojiStringMap = new HashMap<>();
                 emojiStringMap.put(gamemode.getEmoji(), gamemode.getName());
                 data.put(String.valueOf(gamemode.getId()), emojiStringMap);
@@ -70,7 +70,7 @@ public class RequestTestSelectMenu extends SelectMenu {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("Szia, " + event.getUser().getName() + "!");
                         embed.setDescription("Tiered: " + tier + ".\nKérlek, pingelj meg egy Regulatort, hogy kipörgesse, ki ellen kell játszanod.");
-                        channel.sendMessage("<@" + event.getUser().getId() + ">").addEmbeds(embed.build()).setComponents(ActionRow.of(new HighTestGiveButton().button(), new HighTestButton().button())).queue();
+                        channel.sendMessage("<@" + event.getUser().getId() + ">").addEmbeds(embed.build()).setComponents(ActionRow.of(new HighTestGiveButton().button(), new CloseButton().button())).queue();
                         event.reply("<#" + channel.getId() + ">").setEphemeral(true).queue();
                     });
         } catch (Exception e) {

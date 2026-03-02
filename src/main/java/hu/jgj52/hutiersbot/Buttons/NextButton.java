@@ -62,7 +62,7 @@ public class NextButton extends Button {
                     embed.setTitle("Szia, " + next.getName() + "!");
                     embed.setDescription("Most <@" + player.getDiscordId() + "> le fog tesztelni téged **" + gm.getName() + "** játékmódból");
                     embed.setFooter(next.getId() + " " + gm.getId());
-                    channel.sendMessage("<@" + next.getDiscordId() + ">").addEmbeds(embed.build()).addComponents(ActionRow.of(new GiveTierButton().button(), new HighTestButton().button())).queue();
+                    channel.sendMessage("<@" + next.getDiscordId() + ">").addEmbeds(embed.build()).addComponents(ActionRow.of(new GiveTierButton().button(), new CloseButton().button())).queue();
                     event.getHook().editOriginal("<#" + channel.getId() + ">").queue();
 
                     //the other part

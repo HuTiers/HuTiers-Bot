@@ -39,7 +39,7 @@ public class StartTestSelectMenu extends SelectMenu {
             PostgreSQL.QueryResult result = Main.postgres.from("gamemodes").order("id").execute().get();
             Map<String, Map<Emoji, String>> data = new LinkedHashMap<>();
             for (Map<String, Object> row : result.data) {
-                Gamemode gamemode = Gamemode.of(Integer.parseInt(row.get("id").toString()));
+                Gamemode gamemode = Gamemode.of(row);
                 Map<Emoji, String> emojiStringMap = new HashMap<>();
                 emojiStringMap.put(gamemode.getEmoji(), gamemode.getName());
                 data.put(String.valueOf(gamemode.getId()), emojiStringMap);

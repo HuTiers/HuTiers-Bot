@@ -48,10 +48,15 @@ public class SpinTiersSelectMenu extends SelectMenu {
         try {
             PostgreSQL.QueryResult result = Main.postgres.from("players").order("id").execute().get();
             List<Player> players = new ArrayList<>();
+            List<Player> retired = new ArrayList<>();
             for (Map<String, Object> data : result.data) {
                 Player player = Player.of(data);
-                if (player.getTier(gamemode).equals(tier) && !player.getRetired(gamemode)) {
-                    players.add(player);
+                if (player.getTier(gamemode).equals(tier)) {
+                    if (!player.getRetired(gamemode)) {
+                        players.add(player);
+                    } else {
+                        retired.add(player);
+                    }
                 }
             }
             if (players.isEmpty()) {
@@ -68,6 +73,13 @@ public class SpinTiersSelectMenu extends SelectMenu {
                 value = value + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
             }
             embed.addField("Lehetséges", value, false);
+            String v = "";
+            for (Player p : retired) {
+                v = v + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
+            }
+            if (!v.isEmpty()) {
+                embed.addField("Retired", v, false);
+            }
             event.replyEmbeds(embed.build()).queue();
         } catch (Exception e) {
             e.printStackTrace();

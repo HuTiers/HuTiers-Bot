@@ -28,6 +28,7 @@ public class Main {
     public static Long testCooldown;
     public static TextChannel resultChannel;
     public static Role testerRole;
+    public static Role regulatorRole;
     public static Dotenv dotenv;
 
     public static void main(String[] args) {
@@ -41,7 +42,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        JDABuilder builder = JDABuilder.createLight(dotenv.get("TOKEN"), Set.of(GatewayIntent.values()));
+        JDABuilder builder = JDABuilder.createDefault(dotenv.get("TOKEN"), Set.of(GatewayIntent.values()));
         builder.addEventListeners(new CommandListener());
         builder.addEventListeners(new ButtonListener());
         builder.addEventListeners(new SelectMenuListener());
@@ -51,12 +52,17 @@ public class Main {
         builder.build();
 
         buttons.add(new StopNameUpdatingButton());
-        buttons.add(new HighTestButton());
+        buttons.add(new CloseButton());
         buttons.add(new HighTestGiveButton());
         buttons.add(new JoinQueueButton());
         buttons.add(new LeaveQueueButton());
         buttons.add(new NextButton());
         buttons.add(new GiveTierButton());
+        buttons.add(new SetRetiredButton());
+        buttons.add(new UnretireButton());
+        buttons.add(new SetTesterButton());
+        buttons.add(new UntesterButton());
+        buttons.add(new SetTierButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
@@ -65,15 +71,18 @@ public class Main {
         commands.add(new ConnectCommand());
         commands.add(new QueuePingCommand());
         commands.add(new ChangeDiscordCommand());
+        commands.add(new ProfileCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
         selectmenus.add(new StartTestSelectMenu());
         selectmenus.add(new QueueSelectMenu());
         selectmenus.add(new SpinGamemodesSelectMenu());
         selectmenus.add(new SpinTiersSelectMenu());
+        selectmenus.add(new ProfileGamemodesSelectMenu());
 
         modals.add(new HighTestGiveModal());
         modals.add(new GiveModal());
+        modals.add(new SetModal());
 
         hu.jgj52.hutiersbot.api.Main.main(args);
     }

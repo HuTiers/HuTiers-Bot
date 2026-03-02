@@ -80,6 +80,8 @@ public class Player {
         return player;
     }
 
+    private boolean canUpdate = true;
+
     private final Map<String, Object> data;
     private final int id;
     private String name;
@@ -88,6 +90,7 @@ public class Player {
     private JsonObject tiers;
     private JsonObject lastTest;
     private JsonObject retired;
+    private JsonObject tester;
 
     private long lastUpdated = 0;
     private static final long INSTANCE_TTL_MS = 5000;
@@ -107,15 +110,18 @@ public class Player {
             Object tiersObj = data.get("tiers");
             Object lastTestObj = data.get("last_test");
             Object retiredObj = data.get("retired");
+            Object testerObj = data.get("tester");
             tiers = tiersObj != null ? gson.fromJson(tiersObj.toString(), JsonObject.class) : new JsonObject();
             lastTest = lastTestObj != null ? gson.fromJson(lastTestObj.toString(), JsonObject.class) : new JsonObject();
             retired = retiredObj != null ? gson.fromJson(retiredObj.toString(), JsonObject.class) : new JsonObject();
+            tester = testerObj != null ? gson.fromJson(testerObj.toString(), JsonObject.class) : new JsonObject();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void update() {
+        if (!canUpdate) return;
         if (System.currentTimeMillis() - lastUpdated < INSTANCE_TTL_MS) return;
         lastUpdated = System.currentTimeMillis();
         Map<String, Object> row = getRowFromCache(id);
@@ -135,6 +141,11 @@ public class Player {
     public JsonObject getLastTest() { update(); return lastTest == null ? new JsonObject() : lastTest; }
 
     public JsonObject getRetired() { update(); return retired == null ? new JsonObject() : retired; }
+
+    public JsonObject getTester() {
+        update();
+        return tester == null ? new JsonObject() : tester;
+    }
 
     public String getTier(Gamemode gamemode) {
         update();
@@ -166,8 +177,19 @@ public class Player {
         return false;
     }
 
+    public Boolean getTester(Gamemode gamemode) {
+        update();
+        for (String key : getTester().keySet()) {
+            if (Integer.parseInt(key) == gamemode.getId()) {
+                return !getTester().get(key).getAsString().isBlank() && getTester().get(key).getAsBoolean();
+            }
+        }
+        return false;
+    }
+
     private void set(Map<String, Object> data) {
-        Main.postgres.from("players").eq("id", getId()).update(data);
+        canUpdate = false;
+        Main.postgres.from("players").eq("id", getId()).update(data).thenAccept(queryResult -> canUpdate = true);
         tableCacheLastUpdated = 0;
         lastUpdated = 0;
     }
@@ -214,6 +236,18 @@ public class Player {
         }
     }
 
+    public void setTester(JsonObject tester) {
+        try {
+            this.tester = tester;
+            PGobject obj = new PGobject();
+            obj.setType("jsonb");
+            obj.setValue(tester.toString());
+            set(Map.of("tester", obj));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setTier(Gamemode gamemode, String tier) {
         update();
         JsonObject tiers = getTiers();
@@ -233,5 +267,12 @@ public class Player {
         JsonObject r = getRetired();
         r.addProperty(String.valueOf(gamemode.getId()), retired);
         setRetired(r);
+    }
+
+    public void setTester(Gamemode gamemode, Boolean tester) {
+        update();
+        JsonObject t = getTester();
+        t.addProperty(String.valueOf(gamemode.getId()), tester);
+        setTester(t);
     }
 }

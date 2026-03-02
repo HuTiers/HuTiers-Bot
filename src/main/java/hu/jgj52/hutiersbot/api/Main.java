@@ -60,7 +60,7 @@ public class Main {
                 String gm = context.pathParam("gamemode");
 
                 try {
-                    Gamemode gamemode = Gamemode.of(Integer.parseInt(postgres.from("gamemodes").eq("name", gm).execute().get().data.getFirst().get("id").toString()));
+                    Gamemode gamemode = Gamemode.of(postgres.from("gamemodes").eq("name", gm).execute().get().data.getFirst());
 
                     context.status(200).json(new Object[]{gamemode});
                 } catch (Exception e) {
@@ -145,7 +145,15 @@ public class Main {
             route.get("/v2/gamemodes", context -> {
                 try {
                     PostgreSQL.QueryResult result = postgres.from("gamemodes").order("id").execute().get();
-                    context.status(200).json(result.data);
+                    List<Map<String, Object>> data = new ArrayList<>();
+                    for (Map<String, Object> row : result.data) {
+                        Map<String, Object> d = new HashMap<>();
+                        d.put("id", row.get("id"));
+                        d.put("name", row.get("name"));
+                        d.put("html", row.get("html"));
+                        data.add(d);
+                    }
+                    context.status(200).json(data);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
