@@ -86,11 +86,12 @@ public class LeaderboardCache {
 
     private static long lastUpdate = 0;
 
-    public static List<Map<String, Object>> getSlice(int from, int to) {
+    public static List<Map<String, Object>> getSlice(int from, int count) {
         if (lastUpdate + 5000 < System.currentTimeMillis()) {
             refresh();
             lastUpdate = System.currentTimeMillis();
         }
+        int to = from + count;
         int number = (to == -1) ? cachedResult.size() : Math.min(to, cachedResult.size());
         return cachedResult.subList(Math.min(from, cachedResult.size()), number);
     }
