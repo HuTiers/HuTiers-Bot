@@ -84,6 +84,38 @@ public class Main {
                 }
             });
 
+            route.get("/v4/player/{player}", context -> {
+                String uuid = context.pathParam("player");
+
+                try {
+                    List<Map<String, Object>> data = postgres.from("players").eq("uuid", uuid).execute().get().data;
+                    if (data.isEmpty()) {
+                        context.status(404).result("Player not found");
+                        return;
+                    }
+                    Map<String, Object> row = data.get(0);
+                    Player player = Player.of(row);
+
+                    Map<String, Map<String, Object>> dat = new HashMap<>();
+                    Map<String, Object> tiers = new HashMap<>();
+                    Map<String, Object> retired = new HashMap<>();
+                    Map<String, Object> tester = new HashMap<>();
+                    for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
+                        Gamemode gamemode = Gamemode.of(gm);
+                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
+                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
+                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                    }
+                    dat.put("tiers", tiers);
+                    dat.put("retired", retired);
+                    dat.put("tester", tester);
+
+                    context.status(200).json(dat);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
             route.get("/v2/gamemode/kit/{gamemode}", context -> {
                 String gm = context.pathParam("gamemode");
 

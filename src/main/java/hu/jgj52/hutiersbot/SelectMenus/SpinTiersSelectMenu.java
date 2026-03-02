@@ -25,18 +25,18 @@ public class SpinTiersSelectMenu extends SelectMenu {
 
     @Override
     public Map<String, Map<Emoji, String>> getOptions() {
-        return Map.of(
-                "LT5", Map.of(),
-                "HT5", Map.of(),
-                "LT4", Map.of(),
-                "HT4", Map.of(),
-                "LT3", Map.of(),
-                "HT3", Map.of(),
-                "LT2", Map.of(),
-                "HT2", Map.of(),
-                "LT1", Map.of(),
-                "HT1", Map.of()
-        );
+        Map<String, Map<Emoji, String>> map = new LinkedHashMap<>();
+        map.put("LT5", Map.of());
+        map.put("HT5", Map.of());
+        map.put("LT4", Map.of());
+        map.put("HT4", Map.of());
+        map.put("LT3", Map.of());
+        map.put("HT3", Map.of());
+        map.put("LT2", Map.of());
+        map.put("HT2", Map.of());
+        map.put("LT1", Map.of());
+        map.put("HT1", Map.of());
+        return map;
     }
 
     @Override
