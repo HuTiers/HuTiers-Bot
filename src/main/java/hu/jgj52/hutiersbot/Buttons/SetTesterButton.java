@@ -61,9 +61,12 @@ public class SetTesterButton extends Button {
                 ActionRow.of(new ProfileGamemodesSelectMenu().selectmenu()),
                 ActionRow.of(new SetRetiredButton().button(), new UnretireButton().button()),
                 ActionRow.of(new SetTesterButton().button(), new UntesterButton().button()),
-                ActionRow.of(new SetTierButton().button())
+                ActionRow.of(new SetTierButton().button()),
+                ActionRow.of(new BanButton().button(), new UnbanButton().button())
         ).queue();
-        Main.guild.addRoleToMember(member, gamemode.getRole()).queue();
+        if (!member.getRoles().contains(gamemode.getRole())) {
+            Main.guild.addRoleToMember(member, gamemode.getRole()).queue();
+        }
         if (!member.getRoles().contains(Main.testerRole)) {
             Main.guild.addRoleToMember(member, Main.testerRole).queue();
         }

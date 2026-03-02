@@ -61,7 +61,8 @@ public class UnretireButton extends Button {
                 ActionRow.of(new ProfileGamemodesSelectMenu().selectmenu()),
                 ActionRow.of(new SetRetiredButton().button(), new UnretireButton().button()),
                 ActionRow.of(new SetTesterButton().button(), new UntesterButton().button()),
-                ActionRow.of(new SetTierButton().button())
+                ActionRow.of(new SetTierButton().button()),
+                ActionRow.of(new BanButton().button(), new UnbanButton().button())
         ).queue();
     }
 }

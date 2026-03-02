@@ -27,6 +27,8 @@ public class ReadyListener extends ListenerAdapter {
         Main.resultChannel = jda.getTextChannelById(Main.dotenv.get("RESULT_CHANNEL_ID"));
         Main.testerRole = jda.getRoleById(Main.dotenv.get("TESTER_ROLE_ID"));
         Main.regulatorRole = jda.getRoleById("1379853875300925440"); // im lazy
+        Main.logChannel = jda.getTextChannelById("1478089406580789339");
+        Main.bannedRole = jda.getRoleById("1383896343881187409");
 
         CommandListUpdateAction jdaCommands = jda.updateCommands();
         List<SlashCommandData> cmds = new ArrayList<>();

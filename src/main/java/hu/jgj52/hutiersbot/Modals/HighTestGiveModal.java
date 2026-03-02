@@ -1,5 +1,6 @@
 package hu.jgj52.hutiersbot.Modals;
 
+import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Modal;
 import hu.jgj52.hutiersbot.Types.Player;
@@ -40,8 +41,10 @@ public class HighTestGiveModal extends Modal {
         String[] dats = event.getChannel().getName().split("-");
         try {
             Player player = Player.of(dats[2]);
-            if (player == null) return;
+            Player tester = Player.of(event.getUser().getId());
             Gamemode gamemode = Gamemode.of(Integer.parseInt(dats[1]));
+            if (player == null || tester == null || gamemode == null) return;
+            Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">\nHighTest").queue();
             player.setTier(gamemode, tier);
             player.setLastTest(gamemode, System.currentTimeMillis());
             event.getInteraction().reply("Tier beállítva!").setEphemeral(true).queue();

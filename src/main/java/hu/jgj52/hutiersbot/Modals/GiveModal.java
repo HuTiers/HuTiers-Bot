@@ -44,6 +44,16 @@ public class GiveModal extends Modal {
     public void execute(ModalInteractionEvent event) {
         //this is definitely not null safe but it is
         String tier = event.getValue("givetiermodal_tier").getAsString().toUpperCase();
+        int weight = switch (tier) {
+            case "LT3" -> 1;
+            case "HT3" -> 2;
+            case "LT2" -> 3;
+            case "HT2" -> 4;
+            case "LT1" -> 5;
+            case "HT1" -> 6;
+            default -> 0;
+        };
+        if (weight > 0) return;
         Message message = event.getMessage();
         MessageEmbed.Footer footer = message.getEmbeds().getFirst().getFooter();
         if (footer == null) {
@@ -62,8 +72,10 @@ public class GiveModal extends Modal {
             return;
         }
         Player tester = Player.of(event.getUser().getId());
+        if (player == null || tester == null) return;
+        Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">").queue();
         player.setTier(gamemode, tier);
-        if (!tier.equals("LT3")) {
+        if (weight == 1) {
             player.setLastTest(gamemode, System.currentTimeMillis());
         }
         EmbedBuilder embed = new EmbedBuilder();

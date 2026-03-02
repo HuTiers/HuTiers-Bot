@@ -2,6 +2,7 @@ package hu.jgj52.hutiersbot.Modals;
 
 import hu.jgj52.hutiersbot.Buttons.*;
 import hu.jgj52.hutiersbot.Commands.ProfileCommand;
+import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.SelectMenus.ProfileGamemodesSelectMenu;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Modal;
@@ -44,13 +45,16 @@ public class SetModal extends Modal {
         Gamemode gamemode = ProfileGamemodesSelectMenu.gamemodes.get(event.getUser().getId());
         SetTierButton.active.remove(event.getUser().getId());
         ProfileGamemodesSelectMenu.gamemodes.remove(event.getUser().getId());
-        if (player == null || gamemode == null) return;
+        Player tester = Player.of(event.getUser().getId());
+        if (player == null || gamemode == null || tester == null) return;
+        Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">\nSet").queue();
         player.setTier(gamemode, tier);
         event.editMessageEmbeds(ProfileCommand.embed(player)).setComponents(
                 ActionRow.of(new ProfileGamemodesSelectMenu().selectmenu()),
                 ActionRow.of(new SetRetiredButton().button(), new UnretireButton().button()),
                 ActionRow.of(new SetTesterButton().button(), new UntesterButton().button()),
-                ActionRow.of(new SetTierButton().button())
+                ActionRow.of(new SetTierButton().button()),
+                ActionRow.of(new BanButton().button(), new UnbanButton().button())
         ).queue();
     }
 }

@@ -68,6 +68,7 @@ public class Player {
     private volatile boolean canUpdate = true;
 
     private final int id;
+    private int weight;
     private volatile String name;
     private volatile String uuid;
     private volatile String discordId;
@@ -86,6 +87,7 @@ public class Player {
 
     private synchronized void applyData(Map<String, Object> data) {
         try {
+            weight = data.get("weight") != null ? Integer.parseInt(data.get("weight").toString()) : 0;
             name = data.get("name") != null ? data.get("name").toString() : "";
             uuid = data.get("uuid") != null ? data.get("uuid").toString() : "";
             discordId = data.get("discord_id") != null ? data.get("discord_id").toString() : "";
@@ -114,6 +116,8 @@ public class Player {
     }
 
     public int getId() { return id; }
+
+    public int getWeight() { return weight; }
 
     public String getName() { update(); return name; }
 
@@ -163,6 +167,11 @@ public class Player {
                 .thenAccept(r -> canUpdate = true);
         tableCacheLastUpdated = 0;
         lastUpdated = 0;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+        set(Map.of("weight", weight));
     }
 
     public void setName(String name) {

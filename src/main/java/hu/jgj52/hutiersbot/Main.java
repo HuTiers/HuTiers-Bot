@@ -32,6 +32,8 @@ public class Main {
     public static Role regulatorRole;
     public static Dotenv dotenv;
     public static List<Map<String, Object>> gamemodes = new ArrayList<>();
+    public static TextChannel logChannel;
+    public static Role bannedRole;
 
     public static void main(String[] args) {
         dotenv = Dotenv.load();
@@ -66,6 +68,8 @@ public class Main {
         buttons.add(new SetTesterButton());
         buttons.add(new UntesterButton());
         buttons.add(new SetTierButton());
+        buttons.add(new BanButton());
+        buttons.add(new UnbanButton());
 
         commands.add(new UpdateNamesCommand());
         commands.add(new RequestTestCommand());
