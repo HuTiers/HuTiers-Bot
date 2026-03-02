@@ -40,8 +40,7 @@ public class LeaderboardCache {
             sortedPlayers.sort((a, b) -> pointsMap.get(b).compareTo(pointsMap.get(a)));
 
             List<Map<String, Object>> result = new ArrayList<>();
-            int place = 1;
-            int samePointsCount = 0;
+            int place = 0;
             int lastPoints = -1;
 
             for (Player player : sortedPlayers) {
@@ -69,11 +68,9 @@ public class LeaderboardCache {
 
                 if (points == lastPoints) {
                     entry.put("place", place);
-                    samePointsCount++;
                 } else {
-                    place = place + 1;
+                    place++;
                     entry.put("place", place);
-                    samePointsCount = 1;
                 }
                 lastPoints = points;
 
