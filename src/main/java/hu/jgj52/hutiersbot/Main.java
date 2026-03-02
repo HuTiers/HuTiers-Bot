@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Main {
@@ -30,6 +31,7 @@ public class Main {
     public static Role testerRole;
     public static Role regulatorRole;
     public static Dotenv dotenv;
+    public static List<Map<String, Object>> gamemodes = new ArrayList<>();
 
     public static void main(String[] args) {
         dotenv = Dotenv.load();
@@ -38,6 +40,7 @@ public class Main {
 
         try {
             postgres = new PostgreSQL(dotenv.get("POSTGRES_HOST"), Integer.parseInt(dotenv.get("POSTGRES_PORT")), dotenv.get("POSTGRES_DATABASE"), dotenv.get("POSTGRES_USER"), dotenv.get("POSTGRES_PASSWORD"));
+            gamemodes = postgres.from("gamemodes").order("priority").execute().get().data;
         } catch (Exception e) {
             e.printStackTrace();
         }

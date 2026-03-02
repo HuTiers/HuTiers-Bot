@@ -68,7 +68,7 @@ public class GiveModal extends Modal {
         embed.setTitle("Teszt eredmény");
         embed.setDescription("<@" + tester.getDiscordId() + "> **" + tier + "** tiert adott <@" + player.getDiscordId() + "> (" + player.getName() + ") játékosnak " + gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "** játékmódból.");
         try {
-            for (Map<String, Object> gms : Main.postgres.from("gamemodes").order("id").execute().get().data) {
+            for (Map<String, Object> gms : Main.gamemodes) {
                 Gamemode gm = Gamemode.of(gms);
                 embed.addField(
                         gm.getEmoji().getFormatted() + " **" + gm.getName() + "**",

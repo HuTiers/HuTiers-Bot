@@ -47,7 +47,7 @@ public class ProfileCommand extends Command {
         embed.setDescription("<@" + player.getDiscordId() + ">");
         embed.setThumbnail("https://nmsr.jgj52.hu/bust/" + player.getUUID());
         try {
-            for (Map<String, Object> data : Main.postgres.from("gamemodes").order("id").execute().get().data) {
+            for (Map<String, Object> data : Main.gamemodes) {
                 Gamemode gamemode = Gamemode.of(data);
                 embed.addField(gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "**", (player.getRetired(gamemode) ? "R" : "") + player.getTier(gamemode) + (player.getTester(gamemode) ? " Teszter" : ""), true);
             }

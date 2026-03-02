@@ -34,7 +34,7 @@ public class ReadyListener extends ListenerAdapter {
         jdaCommands.addCommands(cmds).queue();
 
         try {
-            for (Map<String, Object> data : Main.postgres.from("gamemodes").order("id").execute().get().data) {
+            for (Map<String, Object> data : Main.gamemodes) {
                 Gamemode gamemode = Gamemode.of(Integer.parseInt(data.get("id").toString()));
                 GuildMessageChannel channel = gamemode.getChannel();
                 channel.getHistoryFromBeginning(100).queue(history -> {

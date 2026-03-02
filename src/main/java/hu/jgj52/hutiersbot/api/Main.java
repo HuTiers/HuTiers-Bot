@@ -32,7 +32,21 @@ public class Main {
                     Map<String, Object> row = data.get(0);
                     Player player = Player.of(row);
 
-                    context.status(200).json(new Object[]{gson.toJson(player.getTiers()), gson.toJson(player.getRetired())});
+                    List<Map<String, Object>> dat = new ArrayList<>();
+                    Map<String, Object> tiers = new HashMap<>();
+                    Map<String, Object> retired = new HashMap<>();
+                    Map<String, Object> tester = new HashMap<>();
+                    for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
+                        Gamemode gamemode = Gamemode.of(gm);
+                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
+                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
+                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                    }
+                    dat.add(tiers);
+                    dat.add(retired);
+                    dat.add(tester);
+
+                    context.status(200).json(dat);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -50,7 +64,21 @@ public class Main {
                     Map<String, Object> row = data.get(0);
                     Player player = Player.of(row);
 
-                    context.status(200).json(new Object[]{gson.toJson(player.getTiers()), gson.toJson(player.getRetired().toString())});
+                    List<Map<String, Object>> dat = new ArrayList<>();
+                    Map<String, Object> tiers = new HashMap<>();
+                    Map<String, Object> retired = new HashMap<>();
+                    Map<String, Object> tester = new HashMap<>();
+                    for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
+                        Gamemode gamemode = Gamemode.of(gm);
+                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
+                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
+                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                    }
+                    dat.add(tiers);
+                    dat.add(retired);
+                    dat.add(tester);
+
+                    context.status(200).json(dat);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -82,9 +110,8 @@ public class Main {
                         players.add(p);
                     }
 
-                    List<Map<String, Object>> gmData = postgres.from("gamemodes").execute().get().data;
                     List<Gamemode> gamemodes = new ArrayList<>();
-                    for (Map<String, Object> row : gmData) {
+                    for (Map<String, Object> row : hu.jgj52.hutiersbot.Main.gamemodes) {
                         Object idObj = row.get("id");
                         int id = (idObj instanceof Number) ? ((Number) idObj).intValue() : Integer.parseInt(idObj.toString());
                         gamemodes.add(Gamemode.of(id));
@@ -144,13 +171,13 @@ public class Main {
 
             route.get("/v2/gamemodes", context -> {
                 try {
-                    PostgreSQL.QueryResult result = postgres.from("gamemodes").order("id").execute().get();
                     List<Map<String, Object>> data = new ArrayList<>();
-                    for (Map<String, Object> row : result.data) {
+                    for (Map<String, Object> row : hu.jgj52.hutiersbot.Main.gamemodes) {
                         Map<String, Object> d = new HashMap<>();
                         d.put("id", row.get("id"));
                         d.put("name", row.get("name"));
                         d.put("html", row.get("html"));
+                        d.put("priority", row.get("priority"));
                         data.add(d);
                     }
                     context.status(200).json(data);

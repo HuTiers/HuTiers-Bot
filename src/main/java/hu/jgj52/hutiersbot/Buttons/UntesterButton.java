@@ -70,7 +70,7 @@ public class UntesterButton extends Button {
         }
         boolean hasAny = false;
         try {
-            for (Map<String, Object> gm : Main.postgres.from("gamemodes").order("id").execute().get().data) {
+            for (Map<String, Object> gm : Main.gamemodes) {
                 Gamemode g = Gamemode.of(gm);
                 if (player.getTester(g)) {
                     hasAny = true;
