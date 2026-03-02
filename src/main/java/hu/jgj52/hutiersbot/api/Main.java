@@ -105,21 +105,7 @@ public class Main {
                     Map<String, Object> row = data.get(0);
                     Player player = Player.of(row);
 
-                    Map<String, Map<String, Object>> dat = new HashMap<>();
-                    Map<String, Object> tiers = new HashMap<>();
-                    Map<String, Object> retired = new HashMap<>();
-                    Map<String, Object> tester = new HashMap<>();
-                    for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
-                        Gamemode gamemode = Gamemode.of(gm);
-                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
-                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
-                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
-                    }
-                    dat.put("tiers", tiers);
-                    dat.put("retired", retired);
-                    dat.put("tester", tester);
-
-                    context.status(200).json(dat);
+                    context.status(200).json(LeaderboardCache.getPlayer(player));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -140,84 +126,9 @@ public class Main {
             route.get("/v2/overall/{from}/{to}", context -> {
                 int from = Integer.parseInt(context.pathParam("from"));
                 int to = Integer.parseInt(context.pathParam("to"));
-                int number = (to == -1) ? 999_999_999 : to; // complete Valve
 
-                try {
-                    List<Map<String, Object>> playerData = postgres.from("players").execute().get().data;
-                    List<Player> players = new ArrayList<>();
-                    for (Map<String, Object> row : playerData) {
-                        Player p = Player.of(row);
-                        if (p == null) continue;
-                        players.add(p);
-                    }
-
-                    List<Gamemode> gamemodes = new ArrayList<>();
-                    for (Map<String, Object> row : hu.jgj52.hutiersbot.Main.gamemodes) {
-                        Object idObj = row.get("id");
-                        int id = (idObj instanceof Number) ? ((Number) idObj).intValue() : Integer.parseInt(idObj.toString());
-                        gamemodes.add(Gamemode.of(id));
-                    }
-
-                    Map<String, Integer> tierPoints = Map.of(
-                            "LT5", 1, "HT5", 2, "LT4", 3, "HT4", 4,
-                            "LT3", 6, "HT3", 10, "LT2", 16, "HT2", 28,
-                            "LT1", 40, "HT1", 50
-                    );
-
-                    Map<Player, Integer> pointsMap = new HashMap<>();
-                    for (Player player : players) {
-                        int sum = 0;
-                        for (Gamemode gm : gamemodes) {
-                            String tier = player.getTier(gm);
-                            sum += tierPoints.getOrDefault(tier, 0);
-                        }
-                        pointsMap.put(player, sum);
-                    }
-
-                    List<Player> sortedPlayers = new ArrayList<>(players);
-                    sortedPlayers.sort((a, b) -> pointsMap.get(b).compareTo(pointsMap.get(a)));
-
-                    List<Map<String, Object>> result = new ArrayList<>();
-                    Player lastPlayer = null;
-
-                    for (int i = from; i < sortedPlayers.size() && result.size() < number; i++) {
-                        Player player = sortedPlayers.get(i);
-                        int points = pointsMap.get(player);
-
-                        Map<String, Object> entry = new HashMap<>();
-                        entry.put("id", player.getId());
-                        entry.put("uuid", player.getUUID());
-                        entry.put("name", player.getName());
-                        entry.put("points", points);
-                        Map<String, Object> tiers = new HashMap<>();
-                        Map<String, Object> retired = new HashMap<>();
-                        Map<String, Object> tester = new HashMap<>();
-                        for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
-                            Gamemode gamemode = Gamemode.of(gm);
-                            tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
-                            retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
-                            tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
-                        }
-                        entry.put("tiers", tiers);
-                        entry.put("retired", retired);
-                        entry.put("tester", tester);
-
-                        if (lastPlayer != null && points == pointsMap.get(lastPlayer)) {
-                            entry.put("place", result.get(result.size() - 1).get("place"));
-                        } else {
-                            entry.put("place", i + 1);
-                        }
-
-                        result.add(entry);
-                        lastPlayer = player;
-                    }
-
-                    context.status(200).json(result);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    context.status(500).result("Internal server error");
-                }
+                List<Map<String, Object>> slice = LeaderboardCache.getSlice(from, to);
+                context.status(200).json(slice);
             });
 
             route.get("/v2/gamemodes", context -> {
