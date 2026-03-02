@@ -148,8 +148,18 @@ public class Main {
                         entry.put("uuid", player.getUUID());
                         entry.put("name", player.getName());
                         entry.put("points", points);
-                        entry.put("tiers", gson.toJson(player.getTiers()));
-                        entry.put("retired", gson.toJson(player.getLastTest()));
+                        Map<String, Object> tiers = new HashMap<>();
+                        Map<String, Object> retired = new HashMap<>();
+                        Map<String, Object> tester = new HashMap<>();
+                        for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
+                            Gamemode gamemode = Gamemode.of(gm);
+                            tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
+                            retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
+                            tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                        }
+                        entry.put("tiers", tiers);
+                        entry.put("retired", retired);
+                        entry.put("tester", tester);
 
                         if (lastPlayer != null && points == pointsMap.get(lastPlayer)) {
                             entry.put("place", result.get(result.size() - 1).get("place"));

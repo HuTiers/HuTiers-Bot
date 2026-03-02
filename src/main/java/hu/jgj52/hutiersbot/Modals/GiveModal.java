@@ -63,7 +63,9 @@ public class GiveModal extends Modal {
         }
         Player tester = Player.of(event.getUser().getId());
         player.setTier(gamemode, tier);
-        player.setLastTest(gamemode, System.currentTimeMillis());
+        if (!tier.equals("LT3")) {
+            player.setLastTest(gamemode, System.currentTimeMillis());
+        }
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Teszt eredmény");
         embed.setDescription("<@" + tester.getDiscordId() + "> **" + tier + "** tiert adott <@" + player.getDiscordId() + "> (" + player.getName() + ") játékosnak " + gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "** játékmódból.");

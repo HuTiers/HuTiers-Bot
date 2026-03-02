@@ -6,23 +6,25 @@ import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import org.postgresql.util.PGobject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player {
-    private static final List<Player> players = new ArrayList<>();
 
-    private static List<Map<String, Object>> tableCache = new ArrayList<>();
-    private static long tableCacheLastUpdated = 0;
+    private static final Map<Integer, Player> players = new ConcurrentHashMap<>();
+
+    private static volatile List<Map<String, Object>> tableCache = new CopyOnWriteArrayList<>();
+    private static volatile long tableCacheLastUpdated = 0;
     private static final long CACHE_TTL_MS = 5000;
 
-    private static void refreshTableCache() {
+    private static synchronized void refreshTableCache() {
         if (System.currentTimeMillis() - tableCacheLastUpdated < CACHE_TTL_MS) return;
         try {
             PostgreSQL.QueryResult result = Main.postgres.from("players").execute().get();
             if (!result.isEmpty() && !result.hasError()) {
-                tableCache = result.data;
+                tableCache = new CopyOnWriteArrayList<>(result.data);
                 tableCacheLastUpdated = System.currentTimeMillis();
             }
         } catch (Exception e) {
@@ -42,66 +44,47 @@ public class Player {
     }
 
     public static Player of(int id) {
-        try {
-            refreshTableCache();
-            Map<String, Object> row = getRowFromCache(id);
-            if (row == null) return null;
-            return of(row);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        Map<String, Object> row = getRowFromCache(id);
+        if (row == null) return null;
+        return of(row);
     }
 
     public static Player of(String discordId) {
-        try {
-            refreshTableCache();
-            for (Map<String, Object> row : tableCache) {
-                Object val = row.get("discord_id");
-                if (val != null && val.toString().equals(discordId)) {
-                    return of(row);
-                }
+        refreshTableCache();
+        for (Map<String, Object> row : tableCache) {
+            Object val = row.get("discord_id");
+            if (val != null && val.toString().equals(discordId)) {
+                return of(row);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
 
     public static Player of(Map<String, Object> data) {
         int incoming = Integer.parseInt(data.get("id").toString());
-        for (Player player : players) {
-            if (player.getId() == incoming) {
-                return player;
-            }
-        }
-        Player player = new Player(data);
-        players.add(player);
-        return player;
+        return players.computeIfAbsent(incoming, id -> new Player(data));
     }
 
-    private boolean canUpdate = true;
+    private volatile boolean canUpdate = true;
 
-    private final Map<String, Object> data;
     private final int id;
-    private String name;
-    private String uuid;
-    private String discordId;
-    private JsonObject tiers;
-    private JsonObject lastTest;
-    private JsonObject retired;
-    private JsonObject tester;
+    private volatile String name;
+    private volatile String uuid;
+    private volatile String discordId;
+    private volatile JsonObject tiers;
+    private volatile JsonObject lastTest;
+    private volatile JsonObject retired;
+    private volatile JsonObject tester;
 
-    private long lastUpdated = 0;
+    private volatile long lastUpdated = 0;
     private static final long INSTANCE_TTL_MS = 5000;
 
     private Player(Map<String, Object> data) {
-        this.data = data;
         this.id = Integer.parseInt(data.get("id").toString());
         applyData(data);
     }
 
-    private void applyData(Map<String, Object> data) {
+    private synchronized void applyData(Map<String, Object> data) {
         try {
             name = data.get("name") != null ? data.get("name").toString() : "";
             uuid = data.get("uuid") != null ? data.get("uuid").toString() : "";
@@ -123,9 +106,11 @@ public class Player {
     private void update() {
         if (!canUpdate) return;
         if (System.currentTimeMillis() - lastUpdated < INSTANCE_TTL_MS) return;
-        lastUpdated = System.currentTimeMillis();
         Map<String, Object> row = getRowFromCache(id);
-        if (row != null) applyData(row);
+        if (row != null) {
+            applyData(row);
+            lastUpdated = System.currentTimeMillis();
+        }
     }
 
     public int getId() { return id; }
@@ -142,63 +127,58 @@ public class Player {
 
     public JsonObject getRetired() { update(); return retired == null ? new JsonObject() : retired; }
 
-    public JsonObject getTester() {
-        update();
-        return tester == null ? new JsonObject() : tester;
-    }
+    public JsonObject getTester() { update(); return tester == null ? new JsonObject() : tester; }
 
     public String getTier(Gamemode gamemode) {
-        update();
-        for (String key : getTiers().keySet()) {
-            if (Integer.parseInt(key) == gamemode.getId()) {
-                return getTiers().get(key).getAsString();
-            }
-        }
-        return "";
+        JsonObject obj = getTiers();
+        return obj.has(String.valueOf(gamemode.getId()))
+                ? obj.get(String.valueOf(gamemode.getId())).getAsString()
+                : "";
     }
 
     public Long getLastTest(Gamemode gamemode) {
-        update();
-        for (String key : getLastTest().keySet()) {
-            if (Integer.parseInt(key) == gamemode.getId()) {
-                return getLastTest().get(key).getAsString().isBlank() ? 0 : getLastTest().get(key).getAsLong();
-            }
-        }
-        return 0L;
+        JsonObject obj = getLastTest();
+        return obj.has(String.valueOf(gamemode.getId()))
+                ? obj.get(String.valueOf(gamemode.getId())).getAsLong()
+                : 0L;
     }
 
     public Boolean getRetired(Gamemode gamemode) {
-        update();
-        for (String key : getRetired().keySet()) {
-            if (Integer.parseInt(key) == gamemode.getId()) {
-                return !getRetired().get(key).getAsString().isBlank() && getRetired().get(key).getAsBoolean();
-            }
-        }
-        return false;
+        JsonObject obj = getRetired();
+        return obj.has(String.valueOf(gamemode.getId()))
+                && obj.get(String.valueOf(gamemode.getId())).getAsBoolean();
     }
 
     public Boolean getTester(Gamemode gamemode) {
-        update();
-        for (String key : getTester().keySet()) {
-            if (Integer.parseInt(key) == gamemode.getId()) {
-                return !getTester().get(key).getAsString().isBlank() && getTester().get(key).getAsBoolean();
-            }
-        }
-        return false;
+        JsonObject obj = getTester();
+        return obj.has(String.valueOf(gamemode.getId()))
+                && obj.get(String.valueOf(gamemode.getId())).getAsBoolean();
     }
 
     private void set(Map<String, Object> data) {
         canUpdate = false;
-        Main.postgres.from("players").eq("id", getId()).update(data).thenAccept(queryResult -> canUpdate = true);
+        Main.postgres.from("players")
+                .eq("id", getId())
+                .update(data)
+                .thenAccept(r -> canUpdate = true);
         tableCacheLastUpdated = 0;
         lastUpdated = 0;
     }
 
-    public void setName(String name) { this.name = name; set(Map.of("name", name)); }
+    public void setName(String name) {
+        this.name = name;
+        set(Map.of("name", name));
+    }
 
-    public void setUUID(String uuid) { this.uuid = uuid; set(Map.of("uuid", uuid)); }
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
+        set(Map.of("uuid", uuid));
+    }
 
-    public void setDiscordId(String discordId) { this.discordId = discordId; set(Map.of("discord_id", discordId)); }
+    public void setDiscordId(String discordId) {
+        this.discordId = discordId;
+        set(Map.of("discord_id", discordId));
+    }
 
     public void setTiers(JsonObject tiers) {
         try {
@@ -249,30 +229,26 @@ public class Player {
     }
 
     public void setTier(Gamemode gamemode, String tier) {
-        update();
-        JsonObject tiers = getTiers();
-        tiers.addProperty(String.valueOf(gamemode.getId()), tier);
-        setTiers(tiers);
+        JsonObject obj = getTiers();
+        obj.addProperty(String.valueOf(gamemode.getId()), tier);
+        setTiers(obj);
     }
 
-    public void setLastTest(Gamemode gamemode, Long lastTest) {
-        update();
-        JsonObject lt = getLastTest();
-        lt.addProperty(String.valueOf(gamemode.getId()), lastTest);
-        setLastTest(lt);
+    public void setLastTest(Gamemode gamemode, Long value) {
+        JsonObject obj = getLastTest();
+        obj.addProperty(String.valueOf(gamemode.getId()), value);
+        setLastTest(obj);
     }
 
-    public void setRetired(Gamemode gamemode, Boolean retired) {
-        update();
-        JsonObject r = getRetired();
-        r.addProperty(String.valueOf(gamemode.getId()), retired);
-        setRetired(r);
+    public void setRetired(Gamemode gamemode, Boolean value) {
+        JsonObject obj = getRetired();
+        obj.addProperty(String.valueOf(gamemode.getId()), value);
+        setRetired(obj);
     }
 
-    public void setTester(Gamemode gamemode, Boolean tester) {
-        update();
-        JsonObject t = getTester();
-        t.addProperty(String.valueOf(gamemode.getId()), tester);
-        setTester(t);
+    public void setTester(Gamemode gamemode, Boolean value) {
+        JsonObject obj = getTester();
+        obj.addProperty(String.valueOf(gamemode.getId()), value);
+        setTester(obj);
     }
 }
