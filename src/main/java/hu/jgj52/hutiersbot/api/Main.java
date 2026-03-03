@@ -38,9 +38,9 @@ public class Main {
                     Map<String, Object> tester = new HashMap<>();
                     for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
                         Gamemode gamemode = Gamemode.of(gm);
-                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
-                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
-                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                        tiers.put(gamemode.getName(), player.getTier(gamemode));
+                        retired.put(gamemode.getName(), player.getRetired(gamemode));
+                        tester.put(gamemode.getName(), player.getTester(gamemode));
                     }
                     dat.add(tiers);
                     dat.add(retired);
@@ -70,9 +70,9 @@ public class Main {
                     Map<String, Object> tester = new HashMap<>();
                     for (Map<String, Object> gm : hu.jgj52.hutiersbot.Main.gamemodes) {
                         Gamemode gamemode = Gamemode.of(gm);
-                        tiers.put(String.valueOf(gamemode.getId()), player.getTier(gamemode));
-                        retired.put(String.valueOf(gamemode.getId()), player.getRetired(gamemode));
-                        tester.put(String.valueOf(gamemode.getId()), player.getTester(gamemode));
+                        tiers.put(gamemode.getName(), player.getTier(gamemode));
+                        retired.put(gamemode.getName(), player.getRetired(gamemode));
+                        tester.put(gamemode.getName(), player.getTester(gamemode));
                     }
                     dat.add(tiers);
                     dat.add(retired);
