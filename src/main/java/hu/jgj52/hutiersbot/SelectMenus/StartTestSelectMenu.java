@@ -7,7 +7,6 @@ import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Types.SelectMenu;
-import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.Message;
@@ -56,10 +55,10 @@ public class StartTestSelectMenu extends SelectMenu {
             event.getMessage().editMessageComponents(ActionRow.of(selectmenu()), ActionRow.of(new NextButton().button())).queue();
             Gamemode gamemode = Gamemode.of(Integer.parseInt(event.getValues().getFirst()));
             Player player = Player.of(event.getUser().getId());
-            if (player == null) return;
+            if (player == null || gamemode == null) return;
             GuildMessageChannel channel = gamemode.getChannel();
             if (channel == null) return;
-            if (!event.getMember().getRoles().contains(gamemode.getRole())) {
+            if (!player.getTester(gamemode)) {
                 event.getHook().editOriginal("Nem vagy teszter " + gamemode.getEmoji().getFormatted() + " " + gamemode.getName() + " játékmódból!").queue();
                 return;
             }
@@ -102,19 +101,19 @@ public class StartTestSelectMenu extends SelectMenu {
             } else {
                 queue.put(gamemode, new ArrayList<>());
                 testers.put(gamemode, new ArrayList<>(List.of(player)));
+                canEnter.put(gamemode, true);
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle(gamemode.getEmoji().getFormatted() + " " + gamemode.getName());
+                embed.setDescription("Csatlakozz a queue-hoz, hogy leteszteljenek.");
+                String emberek = "";
+                embed.addField("Emberek", emberek, false);
+                String teszterek = "";
+                for (Player p : testers.get(gamemode)) {
+                    teszterek = teszterek + "<@" + p.getDiscordId() + "> (" + p.getName() + ")\n";
+                }
+                embed.addField("Teszterek", teszterek, false);
+                channel.sendMessage(gamemode.getQueueRole().getAsMention()).addEmbeds(embed.build()).addComponents(ActionRow.of(new JoinQueueButton().button(), new LeaveQueueButton().button())).queue(message -> messages.put(gamemode, message));
             }
-            canEnter.put(gamemode, true);
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle(gamemode.getEmoji().getFormatted() + " " + gamemode.getName());
-            embed.setDescription("Csatlakozz a queue-hoz, hogy leteszteljenek.");
-            String emberek = "";
-            embed.addField("Emberek", emberek, false);
-            String teszterek = "";
-            for (Player p : testers.get(gamemode)) {
-                teszterek = teszterek + "<@" + p.getDiscordId() + "> (" + p.getName() + ")\n";
-            }
-            embed.addField("Teszterek", teszterek, false);
-            channel.sendMessage(gamemode.getQueueRole().getAsMention()).addEmbeds(embed.build()).addComponents(ActionRow.of(new JoinQueueButton().button(), new LeaveQueueButton().button())).queue(message -> messages.put(gamemode, message));
             event.getHook().editOriginal("Teszt elindítva!").queue();
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -40,6 +40,10 @@ public class JoinQueueButton extends Button {
                 event.reply("Nem vagy fent a tierlisten!").setEphemeral(true).queue();
                 return;
             }
+            if (player.getWeight() == -1) {
+                event.reply("Ki vagy tiltva!").setEphemeral(true).queue();
+                return;
+            }
             if (player.getLastTest(gamemode) + Main.testCooldown > System.currentTimeMillis()) {
                 event.reply("Az újratesztelési időkereted lejár <t:" + (player.getLastTest(gamemode) + Main.testCooldown) / 1000 + ":R>").setEphemeral(true).queue();
                 return;

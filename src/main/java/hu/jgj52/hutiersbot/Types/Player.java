@@ -142,7 +142,7 @@ public class Player {
 
     public Long getLastTest(Gamemode gamemode) {
         JsonObject obj = getLastTest();
-        return obj.has(String.valueOf(gamemode.getId()))
+        return obj.has(String.valueOf(gamemode.getId())) && !obj.get(String.valueOf(gamemode.getId())).getAsString().isBlank()
                 ? obj.get(String.valueOf(gamemode.getId())).getAsLong()
                 : 0L;
     }

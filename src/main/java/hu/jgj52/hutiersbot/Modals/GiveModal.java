@@ -53,7 +53,7 @@ public class GiveModal extends Modal {
             case "HT1" -> 6;
             default -> 0;
         };
-        if (weight > 0) return;
+        if (weight > 1) return;
         Message message = event.getMessage();
         MessageEmbed.Footer footer = message.getEmbeds().getFirst().getFooter();
         if (footer == null) {
@@ -67,15 +67,15 @@ public class GiveModal extends Modal {
         }
         Player player = Player.of(Integer.parseInt(id.split(" ")[0]));
         Gamemode gamemode = Gamemode.of(Integer.parseInt(id.split(" ")[1]));
-        if (!event.getMember().getRoles().contains(gamemode.getRole())) {
+        Player tester = Player.of(event.getUser().getId());
+        if (player == null || tester == null || gamemode == null) return;
+        if (!tester.getTester(gamemode)) {
             event.reply("Nem vagy teszter!").setEphemeral(true).queue();
             return;
         }
-        Player tester = Player.of(event.getUser().getId());
-        if (player == null || tester == null) return;
         Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">").queue();
         player.setTier(gamemode, tier);
-        if (weight == 1) {
+        if (weight != 1) {
             player.setLastTest(gamemode, System.currentTimeMillis());
         }
         EmbedBuilder embed = new EmbedBuilder();

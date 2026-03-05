@@ -5,6 +5,7 @@ import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Types.SelectMenu;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
+import hu.jgj52.hutiersbot.api.LeaderboardCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -46,16 +47,18 @@ public class SpinTiersSelectMenu extends SelectMenu {
         Gamemode gamemode = SpinGamemodesSelectMenu.gamemodes.get(event.getUser().getId());
         if (gamemode == null) return;
         try {
-            PostgreSQL.QueryResult result = Main.postgres.from("players").order("id").execute().get();
             List<Player> players = new ArrayList<>();
             List<Player> retired = new ArrayList<>();
-            for (Map<String, Object> data : result.data) {
+            List<Player> banned = new ArrayList<>();
+            for (Map<String, Object> data : LeaderboardCache.getSlice(0, -1)) {
                 Player player = Player.of(data);
                 if (player.getTier(gamemode).equals(tier)) {
-                    if (!player.getRetired(gamemode)) {
-                        players.add(player);
-                    } else {
+                    if (player.getRetired(gamemode)) {
                         retired.add(player);
+                    } else if (player.getWeight() == -1) {
+                        banned.add(player);
+                    } else {
+                        players.add(player);
                     }
                 }
             }
@@ -79,6 +82,13 @@ public class SpinTiersSelectMenu extends SelectMenu {
             }
             if (!v.isEmpty()) {
                 embed.addField("Retired", v, false);
+            }
+            String val = "";
+            for (Player p : banned) {
+                val = val + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
+            }
+            if (!val.isEmpty()) {
+                embed.addField("Banned", val, false);
             }
             event.replyEmbeds(embed.build()).queue();
         } catch (Exception e) {

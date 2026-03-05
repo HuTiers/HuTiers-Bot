@@ -111,13 +111,19 @@ public class Main {
                 }
             });
 
+            route.get("/v2/playerCount", context -> {
+                try {
+                    context.json(postgres.from("players").execute().get().data.size());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
             route.get("/v2/gamemode/kit/{gamemode}", context -> {
                 String gm = context.pathParam("gamemode");
 
                 try {
-                    Gamemode gamemode = Gamemode.of(postgres.from("gamemodes").eq("name", gm).execute().get().data.getFirst());
-
-                    context.status(200).json(new Object[]{gamemode});
+                    context.status(200).json(postgres.from("gamemodes").eq("name", gm).execute().get().data.getFirst().get("kit"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

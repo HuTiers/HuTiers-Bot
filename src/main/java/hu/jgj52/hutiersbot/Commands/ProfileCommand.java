@@ -6,6 +6,7 @@ import hu.jgj52.hutiersbot.SelectMenus.ProfileGamemodesSelectMenu;
 import hu.jgj52.hutiersbot.Types.Command;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
+import hu.jgj52.hutiersbot.api.LeaderboardCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -63,6 +64,8 @@ public class ProfileCommand extends Command {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(player.getName());
         embed.setDescription("<@" + player.getDiscordId() + ">");
+        embed.addField("Helyezés", LeaderboardCache.getPlayer(player).get("place").toString() + ".", false);
+        embed.addField("Pontok", LeaderboardCache.getPlayer(player).get("points").toString(), false);
         embed.setThumbnail("https://nmsr.jgj52.hu/bust/" + player.getUUID());
         if (player.getWeight() == -1) {
             embed.setFooter("Banned");

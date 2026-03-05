@@ -44,6 +44,10 @@ public class HighTestGiveModal extends Modal {
             Player tester = Player.of(event.getUser().getId());
             Gamemode gamemode = Gamemode.of(Integer.parseInt(dats[1]));
             if (player == null || tester == null || gamemode == null) return;
+            if (!tester.getTester(gamemode)) {
+                event.reply("Nem vagy teszter!").setEphemeral(true).queue();
+                return;
+            }
             Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">\nHighTest").queue();
             player.setTier(gamemode, tier);
             player.setLastTest(gamemode, System.currentTimeMillis());
