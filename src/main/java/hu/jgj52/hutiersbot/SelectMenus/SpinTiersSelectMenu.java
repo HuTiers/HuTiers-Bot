@@ -75,11 +75,13 @@ public class SpinTiersSelectMenu extends SelectMenu {
             for (Player p : players) {
                 value = value + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
             }
+            if (value.length() > 1024) value = value.substring(0, 1021) + "...";
             embed.addField("Lehetséges", value, false);
             String v = "";
             for (Player p : retired) {
                 v = v + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
             }
+            if (v.length() > 1024) v = v.substring(0, 1021) + "...";
             if (!v.isEmpty()) {
                 embed.addField("Retired", v, false);
             }
@@ -87,6 +89,7 @@ public class SpinTiersSelectMenu extends SelectMenu {
             for (Player p : banned) {
                 val = val + p.getName().replaceAll("_", "\\\\_") + " (<@" + p.getDiscordId() + ">)\n";
             }
+            if (val.length() > 1024) val = val.substring(0, 1021) + "...";
             if (!val.isEmpty()) {
                 embed.addField("Banned", val, false);
             }

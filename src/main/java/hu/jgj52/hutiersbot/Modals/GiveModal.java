@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -74,6 +75,12 @@ public class GiveModal extends Modal {
             return;
         }
         Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">").queue();
+        Map<String, Object> log = new HashMap<>();
+        log.put("tester", tester.getId());
+        log.put("tested", player.getId());
+        log.put("gamemode", gamemode.getId());
+        log.put("timestamp", System.currentTimeMillis());
+        Main.postgres.from("tests").insert(log);
         player.setTier(gamemode, tier);
         if (weight != 1) {
             player.setLastTest(gamemode, System.currentTimeMillis());
