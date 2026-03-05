@@ -80,6 +80,8 @@ public class GiveModal extends Modal {
         log.put("tested", player.getId());
         log.put("gamemode", gamemode.getId());
         log.put("timestamp", System.currentTimeMillis());
+        log.put("tier", tier);
+        log.put("type", 0);
         Main.postgres.from("tests").insert(log);
         player.setTier(gamemode, tier);
         if (weight != 1) {

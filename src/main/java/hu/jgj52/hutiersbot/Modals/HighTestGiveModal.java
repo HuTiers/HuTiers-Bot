@@ -9,7 +9,9 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class HighTestGiveModal extends Modal {
@@ -48,6 +50,14 @@ public class HighTestGiveModal extends Modal {
                 event.reply("Nem vagy teszter!").setEphemeral(true).queue();
                 return;
             }
+            Map<String, Object> log = new HashMap<>();
+            log.put("tester", tester.getId());
+            log.put("tested", player.getId());
+            log.put("gamemode", gamemode.getId());
+            log.put("timestamp", System.currentTimeMillis());
+            log.put("tier", tier);
+            log.put("type", 1);
+            Main.postgres.from("tests").insert(log);
             Main.logChannel.sendMessage(tester.getUUID() + " " + tester.getName() + " <@" + tester.getDiscordId() + ">\n" + tier + "\n" + player.getUUID() + " " + player.getName() + " <@" + player.getDiscordId() + ">\nHighTest").queue();
             player.setTier(gamemode, tier);
             player.setLastTest(gamemode, System.currentTimeMillis());
