@@ -6,9 +6,12 @@ import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Types.SelectMenu;
+import hu.jgj52.hutiersbot.api.LeaderboardCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
@@ -60,6 +63,21 @@ public class RequestTestSelectMenu extends SelectMenu {
                 event.reply("Minimum LT3 kell legyél ebből a játékmódból!").setEphemeral(true).queue();
                 return;
             }
+            List<Player> players = new ArrayList<>();
+            for (Map<String, Object> data : LeaderboardCache.getSlice(0, -1)) {
+                Player p = Player.of(data);
+                if (p.getTier(gamemode).equals(tier)) {
+                    if (!p.getRetired(gamemode) && p.getWeight() != -1 && player != p) {
+                        players.add(p);
+                    }
+                }
+            }
+            Player pl;
+            if (!players.isEmpty()) {
+                pl = players.get(new Random().nextInt(0, players.size()));
+            } else {
+                pl = null;
+            }
             Main.guild.createTextChannel(event.getUser().getName().replaceAll("\\.", "") + "-" + gamemode.getId() + "-" + event.getUser().getId(), gamemode.getCategory())
                     .addPermissionOverride(event.getMember(), EnumSet.of(Permission.VIEW_CHANNEL), EnumSet.noneOf(Permission.class))
                     .addPermissionOverride(Main.guild.getPublicRole(), EnumSet.noneOf(Permission.class), EnumSet.of(Permission.VIEW_CHANNEL))
@@ -67,7 +85,13 @@ public class RequestTestSelectMenu extends SelectMenu {
                     .queue(channel -> {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("Szia, " + event.getUser().getName() + "!");
-                        embed.setDescription("Tiered: " + tier + ".\nKérlek, pingelj meg egy Regulatort, hogy kipörgesse, ki ellen kell játszanod.");
+                        embed.setDescription("Tiered: " + tier + ".");
+                        if (pl != null) {
+                            embed.addField("Pörgetett ember", "<@" + pl.getDiscordId() + "> (" + pl.getName() + ")", false);
+                            Main.guild.retrieveMemberById(pl.getDiscordId()).queue(member -> channel.upsertPermissionOverride(member).setAllowed(Permission.VIEW_CHANNEL).queue(), t -> embed.setFooter("Az embert nem sikerült a channelhez adni."));
+                        } else {
+                            embed.addField("Pörgetett ember", "Nem sikerült pörgetni embert.", false);
+                        }
                         channel.sendMessage("<@" + event.getUser().getId() + ">").addEmbeds(embed.build()).setComponents(ActionRow.of(new HighTestGiveButton().button(), new CloseButton().button())).queue();
                         event.reply("<#" + channel.getId() + ">").setEphemeral(true).queue();
                     });

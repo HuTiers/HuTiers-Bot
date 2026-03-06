@@ -23,7 +23,7 @@ public class CloseButton extends Button {
 
     @Override
     public void execute(ButtonInteractionEvent event) {
-        if (event.getMember().getRoles().contains(Main.testerRole)) {
+        if (event.getMember().getRoles().contains(Main.testerRole) || event.getMember().getRoles().contains(Main.regulatorRole)) {
             event.getChannel().delete().queue();
         }
     }
