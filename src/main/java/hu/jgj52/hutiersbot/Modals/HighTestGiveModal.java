@@ -46,8 +46,8 @@ public class HighTestGiveModal extends Modal {
             Player tester = Player.of(event.getUser().getId());
             Gamemode gamemode = Gamemode.of(Integer.parseInt(dats[1]));
             if (player == null || tester == null || gamemode == null) return;
-            if (!tester.getTester(gamemode)) {
-                event.reply("Nem vagy teszter!").setEphemeral(true).queue();
+            if (!Main.guild.retrieveMemberById(tester.getDiscordId()).complete().getRoles().contains(Main.regulatorRole)) {
+                event.reply("Nem vagy regulátor!").queue();
                 return;
             }
             Map<String, Object> log = new HashMap<>();
