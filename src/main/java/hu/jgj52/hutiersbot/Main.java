@@ -8,6 +8,7 @@ import hu.jgj52.hutiersbot.SelectMenus.*;
 import hu.jgj52.hutiersbot.Types.*;
 import hu.jgj52.hutiersbot.Utils.*;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
@@ -34,6 +35,7 @@ public class Main {
     public static List<Map<String, Object>> gamemodes = new ArrayList<>();
     public static TextChannel logChannel;
     public static Role bannedRole;
+    public static JDA jda;
 
     public static void main(String[] args) {
         dotenv = Dotenv.load();
@@ -90,7 +92,5 @@ public class Main {
         modals.add(new HighTestGiveModal());
         modals.add(new GiveModal());
         modals.add(new SetModal());
-
-        hu.jgj52.hutiersbot.api.Main.main(args);
     }
 }

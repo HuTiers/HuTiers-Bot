@@ -1,13 +1,11 @@
 package hu.jgj52.hutiersbot.api;
 
-import com.google.gson.Gson;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import io.javalin.Javalin;
 import io.javalin.config.RoutesConfig;
 import io.javalin.plugin.bundled.CorsPluginConfig;
-import io.javalin.websocket.WsConfig;
 import io.javalin.websocket.WsContext;
 
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import java.util.Map;
 
 public class Main {
     private static final List<WsContext> connections = new ArrayList<>();
+    private static final List<WsContext> siteConnections = new ArrayList<>();
 
     public static void main(String[] args) {
         PostgreSQL postgres = hu.jgj52.hutiersbot.Main.postgres;
@@ -24,10 +23,14 @@ public class Main {
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             RoutesConfig route = config.routes;
 
-
             route.ws("/", ws -> {
                 ws.onConnect(connections::add);
                 ws.onClose(connections::remove);
+            });
+
+            route.ws("/site", ws -> {
+                ws.onConnect(siteConnections::add);
+                ws.onClose(siteConnections::remove);
             });
 
             route.get("/v2/player/{player}", context -> {
@@ -170,5 +173,13 @@ public class Main {
         for (WsContext ctx : connections) {
             ctx.send("update " + uuid);
         }
+    }
+
+    public static int getConnections() {
+        return connections.size();
+    }
+
+    public static int getSiteConnections() {
+        return siteConnections.size();
     }
 }

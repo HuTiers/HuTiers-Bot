@@ -3,7 +3,10 @@ package hu.jgj52.hutiersbot.Listeners;
 import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Command;
 import hu.jgj52.hutiersbot.Types.Gamemode;
+import hu.jgj52.hutiersbot.Types.Player;
+import hu.jgj52.hutiersbot.api.LeaderboardCache;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -16,13 +19,16 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class ReadyListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         JDA jda = event.getJDA();
 
+        Main.jda = jda;
         Main.guild = jda.getGuildById(Main.dotenv.get("GUILD_ID"));
         Main.resultChannel = jda.getTextChannelById(Main.dotenv.get("RESULT_CHANNEL_ID"));
         Main.testerRole = jda.getRoleById(Main.dotenv.get("TESTER_ROLE_ID"));
@@ -57,5 +63,23 @@ public class ReadyListener extends ListenerAdapter {
                 }
             }
         });
+        run();
+        hu.jgj52.hutiersbot.api.Main.main(new String[]{});
+    }
+
+    private int i = 0;
+
+    private void run() {
+        List<Activity> activities = List.of(
+            Activity.watching(hu.jgj52.hutiersbot.api.Main.getConnections() + " ember használja a modot"),
+            Activity.watching(hu.jgj52.hutiersbot.api.Main.getSiteConnections() + " ember nézi az oldalt"),
+            Activity.competing(Player.of(LeaderboardCache.getSlice(0, -1).getFirst()).getName() + " az első"),
+            Activity.playing(Main.gamemodes.size() + " játékmód")
+        );
+        if (i < activities.size() - 1) i++; else i = 0;
+        Main.jda.getPresence().setActivity(
+                activities.get(i)
+        );
+        CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS).execute(this::run);
     }
 }
