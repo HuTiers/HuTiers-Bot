@@ -167,6 +167,7 @@ public class Player {
                 .thenAccept(r -> canUpdate = true);
         tableCacheLastUpdated = 0;
         lastUpdated = 0;
+        hu.jgj52.hutiersbot.api.Main.update(getUUID());
     }
 
     public void setWeight(int weight) {

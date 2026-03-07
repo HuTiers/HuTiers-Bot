@@ -7,6 +7,8 @@ import hu.jgj52.hutiersbot.Utils.PostgreSQL;
 import io.javalin.Javalin;
 import io.javalin.config.RoutesConfig;
 import io.javalin.plugin.bundled.CorsPluginConfig;
+import io.javalin.websocket.WsConfig;
+import io.javalin.websocket.WsContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +16,20 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
+    private static final List<WsContext> connections = new ArrayList<>();
+
     public static void main(String[] args) {
         PostgreSQL postgres = hu.jgj52.hutiersbot.Main.postgres;
         Javalin.create(config -> {
-            Gson gson = new Gson();
             config.bundledPlugins.enableCors(cors -> cors.addRule(CorsPluginConfig.CorsRule::anyHost));
             RoutesConfig route = config.routes;
+
+
+            route.ws("/", ws -> {
+                ws.onConnect(connections::add);
+                ws.onClose(connections::remove);
+            });
+
             route.get("/v2/player/{player}", context -> {
                 String playerName = context.pathParam("player");
 
@@ -154,5 +164,11 @@ public class Main {
                 }
             });
         }).start(34325);
+    }
+
+    public static void update(String uuid) {
+        for (WsContext ctx : connections) {
+            ctx.send("update " + uuid);
+        }
     }
 }
