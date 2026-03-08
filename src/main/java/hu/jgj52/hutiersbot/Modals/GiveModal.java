@@ -86,6 +86,8 @@ public class GiveModal extends Modal {
         player.setTier(gamemode, tier);
         if (weight != 1) {
             player.setLastTest(gamemode, System.currentTimeMillis());
+        } else {
+            player.setLastTest(gamemode, -1L);
         }
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Teszt eredmény");

@@ -59,6 +59,10 @@ public class RequestTestSelectMenu extends SelectMenu {
                 return;
             }
             String tier = player.getTier(gamemode);
+            String finalTier = tier;
+            if (tier.equals("LT3") && player.getLastTest(gamemode) == -1L) {
+                tier = "HT3";
+            }
             if (tier.endsWith("4") || tier.endsWith("5")) {
                 event.reply("Minimum LT3 kell legyél ebből a játékmódból!").setEphemeral(true).queue();
                 return;
@@ -85,7 +89,7 @@ public class RequestTestSelectMenu extends SelectMenu {
                     .queue(channel -> {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("Szia, " + event.getUser().getName() + "!");
-                        embed.setDescription("Tiered: " + tier + ".");
+                        embed.setDescription("Tiered: " + finalTier + ".");
                         if (pl != null) {
                             embed.addField("Pörgetett ember", "<@" + pl.getDiscordId() + "> (" + pl.getName() + ")", false);
                             Main.guild.retrieveMemberById(pl.getDiscordId()).queue(member -> channel.upsertPermissionOverride(member).setAllowed(Permission.VIEW_CHANNEL).queue(), t -> embed.setFooter("Az embert nem sikerült a channelhez adni."));
