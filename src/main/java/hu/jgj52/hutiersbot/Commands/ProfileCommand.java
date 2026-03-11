@@ -6,6 +6,7 @@ import hu.jgj52.hutiersbot.SelectMenus.ProfileGamemodesSelectMenu;
 import hu.jgj52.hutiersbot.Types.Command;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
+import hu.jgj52.hutiersbot.Types.Tier;
 import hu.jgj52.hutiersbot.api.LeaderboardCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -73,7 +74,7 @@ public class ProfileCommand extends Command {
         try {
             for (Map<String, Object> data : Main.gamemodes) {
                 Gamemode gamemode = Gamemode.of(data);
-                embed.addField(gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "**", (player.getRetired(gamemode) ? "R" : "") + player.getTier(gamemode) + (player.getTester(gamemode) ? " Teszter" : ""), true);
+                embed.addField(gamemode.getEmoji().getFormatted() + " **" + gamemode.getName() + "**", (player.getRetired(gamemode) ? "R" : "") + Tier.getEmoji(player.getTier(gamemode)) + (player.getTester(gamemode) ? "Teszter" : "") + (player.getLastTest(gamemode) != 0 && player.getLastTest(gamemode) + Main.testCooldown > System.currentTimeMillis() ? "\n<t:" + (player.getLastTest(gamemode) + Main.testCooldown) / 1000 + ":R>" : "\nAkármikor tesztelhet"), true);
             }
         } catch (Exception e) {
             e.printStackTrace();
