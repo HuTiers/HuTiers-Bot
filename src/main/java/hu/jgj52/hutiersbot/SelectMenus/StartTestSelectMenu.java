@@ -67,8 +67,10 @@ public class StartTestSelectMenu extends SelectMenu {
                 if (testers.get(gamemode).isEmpty()) {
                     canEnter.put(gamemode, false);
                     queue.get(gamemode).clear();
-                    messages.get(gamemode).delete().complete();
-                    messages.remove(gamemode);
+                    if (messages.containsKey(gamemode)) {
+                        messages.get(gamemode).delete().complete();
+                        messages.remove(gamemode);
+                    }
                 }
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.setTitle(gamemode.getEmoji().getFormatted() + " " + gamemode.getName());
