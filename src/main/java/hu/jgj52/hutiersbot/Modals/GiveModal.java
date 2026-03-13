@@ -4,7 +4,6 @@ import hu.jgj52.hutiersbot.Main;
 import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Modal;
 import hu.jgj52.hutiersbot.Types.Player;
-import hu.jgj52.hutiersbot.Types.Tier;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -98,7 +97,7 @@ public class GiveModal extends Modal {
                 Gamemode gm = Gamemode.of(gms);
                 embed.addField(
                         gm.getEmoji().getFormatted() + " **" + gm.getName() + "**",
-                        Tier.getEmoji(player.getTier(gm)),
+                        player.getFormattedTier(gm),
                         true
                 );
             }

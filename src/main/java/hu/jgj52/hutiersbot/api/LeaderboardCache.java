@@ -88,8 +88,8 @@ public class LeaderboardCache {
 
     public static List<Map<String, Object>> getSlice(int from, int count) {
         if (lastUpdate + 5000 < System.currentTimeMillis()) {
-            refresh();
             lastUpdate = System.currentTimeMillis();
+            refresh();
         }
         int to = from + count;
         int number = (to == -1) ? cachedResult.size() : Math.min(to, cachedResult.size());
@@ -98,8 +98,8 @@ public class LeaderboardCache {
 
     public static Map<String, Object> getPlayer(Player player) {
         if (lastUpdate + 5000 < System.currentTimeMillis()) {
-            refresh();
             lastUpdate = System.currentTimeMillis();
+            refresh();
         }
         for (Map<String, Object> d : cachedResult) {
             if (d.get("name").toString().equals(player.getName())) {
