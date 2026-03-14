@@ -17,7 +17,7 @@ public class LeaderboardCache {
 
     public static synchronized void refresh() {
         try {
-            List<Map<String, Object>> playerData = postgres.from("players").order("id").execute().get().data;
+            List<Map<String, Object>> playerData = postgres.from("players").order("name").execute().get().data;
             List<Player> players = playerData.stream()
                     .map(Player::of)
                     .filter(Objects::nonNull)
