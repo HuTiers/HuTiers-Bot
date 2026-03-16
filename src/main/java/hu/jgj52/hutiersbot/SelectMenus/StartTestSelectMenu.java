@@ -66,6 +66,7 @@ public class StartTestSelectMenu extends SelectMenu {
                 testers.get(gamemode).remove(player);
                 if (testers.get(gamemode).isEmpty()) {
                     canEnter.put(gamemode, false);
+                    testers.remove(gamemode);
                     queue.get(gamemode).clear();
                     if (messages.containsKey(gamemode)) {
                         messages.get(gamemode).delete().complete();
