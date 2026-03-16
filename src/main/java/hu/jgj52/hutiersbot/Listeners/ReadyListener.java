@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,9 +31,9 @@ public class ReadyListener extends ListenerAdapter {
         Main.guild = jda.getGuildById(Main.dotenv.get("GUILD_ID"));
         Main.resultChannel = jda.getTextChannelById(Main.dotenv.get("RESULT_CHANNEL_ID"));
         Main.testerRole = jda.getRoleById(Main.dotenv.get("TESTER_ROLE_ID"));
-        Main.regulatorRole = jda.getRoleById("1379853875300925440"); // im lazy
-        Main.logChannel = jda.getTextChannelById("1478089406580789339");
-        Main.bannedRole = jda.getRoleById("1383896343881187409");
+        Main.regulatorRole = jda.getRoleById(Main.dotenv.get("REGULATOR_ROLE_ID")); // im lazy
+        Main.logChannel = jda.getTextChannelById(Main.dotenv.get("LOG_CHANNEL_ID"));
+        Main.bannedRole = jda.getRoleById(Main.dotenv.get("BANNED_ROLE_IDB"));
 
         CommandListUpdateAction jdaCommands = jda.updateCommands();
         List<SlashCommandData> cmds = new ArrayList<>();
@@ -55,7 +54,7 @@ public class ReadyListener extends ListenerAdapter {
             e.printStackTrace();
         }
         CompletableFuture.runAsync(() -> {
-            Role role = Main.guild.getRoleById("1379804960191156264");
+            Role role = Main.guild.getRoleById(Main.dotenv.get("MEMBER_ROLE_ID"));
             if (role == null) return;
             for (Member member : Main.guild.loadMembers().get()) {
                 if (!member.getRoles().contains(role)) {
@@ -71,10 +70,11 @@ public class ReadyListener extends ListenerAdapter {
 
     private void run() {
         List<Activity> activities = List.of(
-            Activity.watching(hu.jgj52.hutiersbot.api.Main.getConnections() + " ember használja a modot"),
-            Activity.watching(hu.jgj52.hutiersbot.api.Main.getSiteConnections() + " ember nézi az oldalt"),
-            Activity.competing(Player.of(LeaderboardCache.getSlice(0, -1).getFirst()).getName() + " az első"),
-            Activity.playing(Main.gamemodes.size() + " játékmód")
+                Activity.watching(hu.jgj52.hutiersbot.api.Main.getConnections() + " ember használja a modot"),
+                Activity.watching(hu.jgj52.hutiersbot.api.Main.getSiteConnections() + " ember nézi az oldalt"),
+                Activity.competing(Player.of(LeaderboardCache.getSlice(0, -1).getFirst()).getName() + " az első"),
+                Activity.playing(Main.gamemodes.size() + " játékmód"),
+                Activity.watching(LeaderboardCache.getSlice(0, -1).size() + " tesztelt ember")
         );
         if (i < activities.size() - 1) i++; else i = 0;
         Main.jda.getPresence().setActivity(

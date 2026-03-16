@@ -38,7 +38,7 @@ public class PostgreSQL {
 
 
     public QueryBuilder from(String table) {
-        return new QueryBuilder(this.dataSource, table);
+        return new QueryBuilder(this.dataSource, table, this.executor);
     }
 
     public CompletableFuture<QueryResult> query(String sql, Object... params) {
@@ -82,19 +82,21 @@ public class PostgreSQL {
 
     public static class QueryBuilder {
         private final HikariDataSource dataSource;
-        private final ExecutorService executor = Executors.newCachedThreadPool();
+        private final ExecutorService executor;
         private String table;
         private String selected = "*";
         private List<FilterClause> filters = new ArrayList<>();
         private String orderClause = "";
 
-        public QueryBuilder(HikariDataSource dataSource, String table) {
+        public QueryBuilder(HikariDataSource dataSource, String table, ExecutorService executor) {
             this.dataSource = dataSource;
             this.table = "\"" + table + "\"";
+            this.executor = executor;
         }
 
-        private QueryBuilder(HikariDataSource dataSource) {
+        private QueryBuilder(HikariDataSource dataSource, ExecutorService executor) {
             this.dataSource = dataSource;
+            this.executor = executor;
         }
 
         public QueryBuilder select(String columns) {
@@ -120,7 +122,7 @@ public class PostgreSQL {
         }
 
         public QueryBuilder clone() {
-            QueryBuilder newBuilder = new QueryBuilder(this.dataSource);
+            QueryBuilder newBuilder = new QueryBuilder(this.dataSource, this.executor);
             newBuilder.table = this.table;
             newBuilder.selected = this.selected;
             newBuilder.filters = new ArrayList<>(this.filters);
