@@ -58,6 +58,7 @@ Admin commands:
 User commands:
 - /profile: shows a profile of the people you want
 - /spin: lets you spin a people out of all the HT3s in the gamemode myGamemode for example
+- /updatenames: updates the names of the players in the players table by their uuid
 
 **API**
 \

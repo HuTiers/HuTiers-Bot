@@ -31,7 +31,7 @@ public class ReadyListener extends ListenerAdapter {
         Main.guild = jda.getGuildById(Main.dotenv.get("GUILD_ID"));
         Main.resultChannel = jda.getTextChannelById(Main.dotenv.get("RESULT_CHANNEL_ID"));
         Main.testerRole = jda.getRoleById(Main.dotenv.get("TESTER_ROLE_ID"));
-        Main.regulatorRole = jda.getRoleById(Main.dotenv.get("REGULATOR_ROLE_ID")); // im lazy
+        Main.regulatorRole = jda.getRoleById(Main.dotenv.get("REGULATOR_ROLE_ID"));
         Main.logChannel = jda.getTextChannelById(Main.dotenv.get("LOG_CHANNEL_ID"));
         Main.bannedRole = jda.getRoleById(Main.dotenv.get("BANNED_ROLE_ID"));
 
