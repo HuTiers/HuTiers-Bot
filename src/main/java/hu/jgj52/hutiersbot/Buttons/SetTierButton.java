@@ -39,11 +39,6 @@ public class SetTierButton extends Button {
             event.reply("Hiba történt").setEphemeral(true).queue();
             return;
         }
-        Member member = Main.guild.retrieveMemberById(tag.replaceAll("[^0-9]", "")).complete();
-        if (member == null) {
-            event.reply("Nem található ember!").setEphemeral(true).queue();
-            return;
-        }
         if (!event.getMember().getRoles().contains(Main.regulatorRole)) {
             event.reply("Nincs regulator rangod!").setEphemeral(true).queue();
             return;
@@ -53,7 +48,7 @@ public class SetTierButton extends Button {
             event.reply("Először válassz ki játékmódot!").setEphemeral(true).queue();
             return;
         }
-        Player player = Player.of(member.getId());
+        Player player = Player.of(tag.replaceAll("[^0-9]", ""));
         if (player == null) {
             event.reply("Nincs fent a tierlisten!").setEphemeral(true).queue();
             return;
