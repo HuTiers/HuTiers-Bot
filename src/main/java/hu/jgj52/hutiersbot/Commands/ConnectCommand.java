@@ -32,7 +32,7 @@ public class ConnectCommand extends Command {
         }
 
         try {
-            PostgreSQL.QueryResult coder = Main.postgres.from("codes").eq("discord_id", event.getUser().getId()).execute().get();
+            PostgreSQL.QueryResult coder = Main.postgres.from("codes").eq("discord_id", event.getUser().getId()).eq("usecase", 0).execute().get();
             if (!coder.isEmpty()) {
                 event.reply("Már van kódod: ``" + coder.data.getFirst().get("code").toString() + "``").setEphemeral(true).queue();
                 return;

@@ -8,7 +8,6 @@ import hu.jgj52.hutiersbot.Types.Gamemode;
 import hu.jgj52.hutiersbot.Types.Player;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
