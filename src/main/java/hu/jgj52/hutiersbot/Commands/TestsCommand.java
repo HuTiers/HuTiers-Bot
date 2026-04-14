@@ -64,7 +64,7 @@ public class TestsCommand extends Command {
             for (Map<String, Object> row : result.data) {
                 Player player = Player.of(Integer.parseInt(row.get("tester").toString()));
                 if (player == null) continue;
-                embed.addField(player.getName(), row.get("test_count").toString(), true);
+                embed.addField(player.getName().replaceAll("_", "\\\\_"), row.get("test_count").toString(), true);
             }
 
             event.replyEmbeds(embed.build()).queue();
