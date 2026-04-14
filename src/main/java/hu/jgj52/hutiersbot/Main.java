@@ -81,6 +81,7 @@ public class Main {
         commands.add(new QueuePingCommand());
         commands.add(new ChangeDiscordCommand());
         commands.add(new ProfileCommand());
+        commands.add(new TestsCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
         selectmenus.add(new StartTestSelectMenu());
