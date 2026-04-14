@@ -60,7 +60,14 @@ public class TestsCommand extends Command {
 
             EmbedBuilder embed = new EmbedBuilder();
             embed.setTitle("Tesztek");
-            embed.setDescription("Ennyi teszt történt a megadott időpontok között:");
+            boolean s = omStart == null;
+            boolean e = omEnd == null;
+            embed.setDescription(
+                    !s && !e ? "Ennyi teszt volt " + start + " és " + end + " között:" :
+                    !s ? "Ennyi teszt volt " + start + " óta:" :
+                    !e ? "Ennyi teszt volt " + end + " előtt:" :
+                    "Ennyi teszt volt összesen:"
+            );
             for (Map<String, Object> row : result.data) {
                 Player player = Player.of(Integer.parseInt(row.get("tester").toString()));
                 if (player == null) continue;
