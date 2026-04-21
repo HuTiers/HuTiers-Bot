@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class NextButton extends Button {
     @Override
@@ -58,6 +59,9 @@ public class NextButton extends Button {
                     channel.upsertPermissionOverride(member)
                             .setAllowed(Permission.VIEW_CHANNEL)
                             .queue();
+                    CompletableFuture.runAsync(() -> channel.upsertPermissionOverride(event.getGuild().retrieveMemberById(player.getId()).complete())
+                            .setAllowed(Permission.VIEW_CHANNEL)
+                            .complete());
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Szia, " + next.getName() + "!");
                     embed.setDescription("Most <@" + player.getDiscordId() + "> le fog tesztelni téged **" + gm.getName() + "** játékmódból");

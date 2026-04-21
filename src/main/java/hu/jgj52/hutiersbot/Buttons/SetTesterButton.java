@@ -64,9 +64,6 @@ public class SetTesterButton extends Button {
                 ActionRow.of(new SetTierButton().button()),
                 ActionRow.of(new BanButton().button(), new UnbanButton().button())
         ).queue();
-        if (!member.getRoles().contains(gamemode.getRole())) {
-            Main.guild.addRoleToMember(member, gamemode.getRole()).queue();
-        }
         if (!member.getRoles().contains(Main.testerRole)) {
             Main.guild.addRoleToMember(member, Main.testerRole).queue();
         }

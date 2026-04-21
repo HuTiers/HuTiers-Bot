@@ -85,7 +85,6 @@ public class RequestTestSelectMenu extends SelectMenu {
             Main.guild.createTextChannel(event.getUser().getName().replaceAll("\\.", "") + "-" + gamemode.getId() + "-" + event.getUser().getId(), gamemode.getCategory())
                     .addPermissionOverride(event.getMember(), EnumSet.of(Permission.VIEW_CHANNEL), EnumSet.noneOf(Permission.class))
                     .addPermissionOverride(Main.guild.getPublicRole(), EnumSet.noneOf(Permission.class), EnumSet.of(Permission.VIEW_CHANNEL))
-                    .addPermissionOverride(gamemode.getRole(), EnumSet.of(Permission.VIEW_CHANNEL), EnumSet.noneOf(Permission.class))
                     .queue(channel -> {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("Szia, " + event.getUser().getName() + "!");

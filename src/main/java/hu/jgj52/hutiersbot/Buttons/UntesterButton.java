@@ -66,9 +66,6 @@ public class UntesterButton extends Button {
                 ActionRow.of(new SetTierButton().button()),
                 ActionRow.of(new BanButton().button(), new UnbanButton().button())
         ).queue();
-        if (member.getRoles().contains(gamemode.getRole())) {
-            Main.guild.removeRoleFromMember(member, gamemode.getRole()).queue();
-        }
         boolean hasAny = false;
         try {
             for (Map<String, Object> gm : Main.gamemodes) {

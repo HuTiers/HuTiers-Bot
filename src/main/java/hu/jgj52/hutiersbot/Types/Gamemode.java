@@ -54,7 +54,6 @@ public class Gamemode {
     private String name;
     private Category category;
     private Emoji emoji;
-    private Role role;
     private GuildMessageChannel channel;
     private Role queueRole;
 
@@ -64,7 +63,6 @@ public class Gamemode {
             name = data.get("name").toString();
             category = Main.guild.getCategoryById(data.get("category_id").toString());
             emoji = Emoji.fromFormatted(data.get("emoji").toString());
-            role = Main.guild.getRoleById(data.get("role_id").toString());
             channel = Main.guild.getChannelById(GuildMessageChannel.class, data.get("channel_id").toString());
             queueRole = Main.guild.getRoleById(data.get("queue_role_id").toString());
         } catch (Exception e) {
@@ -86,10 +84,6 @@ public class Gamemode {
 
     public Emoji getEmoji() {
         return emoji;
-    }
-
-    public Role getRole() {
-        return role;
     }
 
     public GuildMessageChannel getChannel() {

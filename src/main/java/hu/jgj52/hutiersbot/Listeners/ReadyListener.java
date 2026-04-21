@@ -71,9 +71,6 @@ public class ReadyListener extends ListenerAdapter {
                         if (!any) {
                             any = true;
                         }
-                        Main.guild.addRoleToMember(member, gamemode.getRole()).queue();
-                    } else {
-                        Main.guild.removeRoleFromMember(member, gamemode.getRole()).queue();
                     }
                 }
                 if (any) {
