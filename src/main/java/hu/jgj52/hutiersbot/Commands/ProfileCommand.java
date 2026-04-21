@@ -62,7 +62,7 @@ public class ProfileCommand extends Command {
 
     public static MessageEmbed embed(Player player) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(player.getName());
+        embed.setTitle(player.getName().replaceAll("_", "\\\\_"));
         embed.setDescription("<@" + player.getDiscordId() + ">");
         embed.addField("Helyezés", LeaderboardCache.getPlayer(player).get("place").toString() + ".", false);
         embed.addField("Pontok", LeaderboardCache.getPlayer(player).get("points").toString(), false);

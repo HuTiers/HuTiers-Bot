@@ -42,7 +42,7 @@ public class ReadyListener extends ListenerAdapter {
 
         try {
             for (Map<String, Object> data : Main.gamemodes) {
-                Gamemode gamemode = Gamemode.of(Integer.parseInt(data.get("id").toString()));
+                Gamemode gamemode = Gamemode.of(data);
                 GuildMessageChannel channel = gamemode.getChannel();
                 channel.getHistoryFromBeginning(100).queue(history -> {
                     for (Message message : history.getRetrievedHistory()) {
@@ -56,9 +56,30 @@ public class ReadyListener extends ListenerAdapter {
         CompletableFuture.runAsync(() -> {
             Role role = Main.guild.getRoleById(Main.dotenv.get("MEMBER_ROLE_ID"));
             if (role == null) return;
-            for (Member member : Main.guild.loadMembers().get()) {
+            List<Member> members = Main.guild.loadMembers().get();
+            for (Member member : members) {
+                if (member.getId().equals("360803213647151114")) continue;
                 if (!member.getRoles().contains(role)) {
                     Main.guild.addRoleToMember(member, role).queue();
+                }
+                Player player = Player.of(member.getId());
+                if (player == null) continue;
+                boolean any = false;
+                for (Map<String, Object> gm : Main.gamemodes) {
+                    Gamemode gamemode = Gamemode.of(gm);
+                    if (player.getTester(gamemode)) {
+                        if (!any) {
+                            any = true;
+                        }
+                        Main.guild.addRoleToMember(member, gamemode.getRole()).queue();
+                    } else {
+                        Main.guild.removeRoleFromMember(member, gamemode.getRole()).queue();
+                    }
+                }
+                if (any) {
+                    Main.guild.addRoleToMember(member, Main.testerRole).queue();
+                } else {
+                    Main.guild.removeRoleFromMember(member, Main.testerRole).queue();
                 }
             }
         });
