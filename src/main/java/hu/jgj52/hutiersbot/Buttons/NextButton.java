@@ -50,18 +50,21 @@ public class NextButton extends Button {
                     return;
                 }
                 Player next = StartTestSelectMenu.queue.get(gm).getFirst();
-                Member member = Main.guild.retrieveMemberById(next.getDiscordId()).complete();
-                if (member == null) {
-                    event.getHook().editOriginal(next.getName() + " nincs bent discordon!").queue();
-                    return;
-                }
                 Main.guild.createTextChannel(next.getName(), gm.getCategory()).queue(channel -> {
-                    channel.upsertPermissionOverride(member)
-                            .setAllowed(Permission.VIEW_CHANNEL)
-                            .queue();
-                    CompletableFuture.runAsync(() -> channel.upsertPermissionOverride(event.getGuild().retrieveMemberById(player.getId()).complete())
-                            .setAllowed(Permission.VIEW_CHANNEL)
-                            .complete());
+                    CompletableFuture.runAsync(() -> {
+                        Member member = Main.guild.retrieveMemberById(next.getDiscordId()).complete();
+                        Member tester = Main.guild.retrieveMemberById(player.getDiscordId()).complete();
+                        if (member == null || tester == null) {
+                            event.getHook().editOriginal(next.getName() + " nincs bent discordon!").queue();
+                            return;
+                        }
+                        channel.upsertPermissionOverride(member)
+                                .setAllowed(Permission.VIEW_CHANNEL)
+                                .queue();
+                        channel.upsertPermissionOverride(tester)
+                                .setAllowed(Permission.VIEW_CHANNEL)
+                                .complete();
+                    });
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Szia, " + next.getName() + "!");
                     embed.setDescription("Most <@" + player.getDiscordId() + "> le fog tesztelni téged **" + gm.getName() + "** játékmódból");
