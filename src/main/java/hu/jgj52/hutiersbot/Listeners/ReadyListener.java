@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -58,6 +59,13 @@ public class ReadyListener extends ListenerAdapter {
             if (role == null) return;
             List<Member> members = Main.guild.loadMembers().get();
             for (Member member : members) {
+                String name = Objects.requireNonNullElse(
+                        member.getNickname(),
+                        member.getUser().getEffectiveName()
+                );
+                if (name.startsWith("!")) {
+                    member.modifyNickname(name.substring(1)).queue();
+                }
                 if (member.getId().equals("360803213647151114")) continue;
                 if (!member.getRoles().contains(role)) {
                     Main.guild.addRoleToMember(member, role).queue();
