@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -35,6 +36,7 @@ public class Main {
     public static List<Map<String, Object>> gamemodes = new ArrayList<>();
     public static TextChannel logChannel;
     public static Role bannedRole;
+    public static Category tickets;
     public static JDA jda;
 
     public static void main(String[] args) {
@@ -82,6 +84,7 @@ public class Main {
         commands.add(new ChangeDiscordCommand());
         commands.add(new ProfileCommand());
         commands.add(new TestsCommand());
+        commands.add(new TicketCommand());
 
         selectmenus.add(new RequestTestSelectMenu());
         selectmenus.add(new StartTestSelectMenu());

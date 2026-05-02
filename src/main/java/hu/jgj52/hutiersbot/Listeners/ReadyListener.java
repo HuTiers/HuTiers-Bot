@@ -35,6 +35,7 @@ public class ReadyListener extends ListenerAdapter {
         Main.regulatorRole = jda.getRoleById(Main.dotenv.get("REGULATOR_ROLE_ID"));
         Main.logChannel = jda.getTextChannelById(Main.dotenv.get("LOG_CHANNEL_ID"));
         Main.bannedRole = jda.getRoleById(Main.dotenv.get("BANNED_ROLE_ID"));
+        Main.tickets = jda.getCategoryById(Main.dotenv.get("TICKETS_CATEGORY_ID"));
 
         CommandListUpdateAction jdaCommands = jda.updateCommands();
         List<SlashCommandData> cmds = new ArrayList<>();
